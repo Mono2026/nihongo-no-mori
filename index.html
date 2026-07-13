@@ -109,6 +109,31 @@ ul, ol { list-style: none; }
 .dashboard-hero h1 span { color: var(--accent); }
 .dashboard-hero p { color: var(--muted); font-size: 14px; max-width: 480px; margin: 0 auto; line-height: 1.6; }
 
+/* Week Navigation Bar */
+.week-nav-bar {
+  display: flex; gap: 6px; justify-content: center; margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.week-nav-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--rule);
+  background: var(--bg2); cursor: pointer; transition: var(--transition);
+  min-width: 56px; position: relative;
+}
+.week-nav-btn:hover { border-color: var(--accent); background: var(--accent-glow); }
+.week-nav-btn.active { border-color: var(--accent); background: var(--accent-glow); box-shadow: 0 0 0 2px var(--accent-glow); }
+.week-nav-btn.completed { border-color: var(--accent2); background: var(--accent2-glow); }
+.week-nav-btn.locked { opacity: 0.35; cursor: not-allowed; }
+.wnb-num { font-size: 16px; font-weight: 700; color: var(--ink); }
+.wnb-label { font-size: 10px; color: var(--muted); }
+.wnb-check { position: absolute; top: -4px; right: -4px; background: var(--accent2); color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+.next-week-btn {
+  padding: 10px 20px; border-radius: var(--radius-sm); border: none;
+  background: var(--accent2); color: white; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: var(--transition);
+}
+.next-week-btn:hover { background: #1E4F1E; transform: translateY(-1px); }
+
 /* Stats Bar */
 .stats-bar {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px;
@@ -906,9 +931,434 @@ const WEEK_DATA = {
 };
 
 // ============================================================
-// MENTOR DATA
+// CURRICULUM PLAN: 8 Weeks of N4→N3
 // ============================================================
-const MENTORS = {
+const CURRICULUM = [
+  { week: 1, title: '第1周', subtitle: '授受表現 & 口語縮約形', grammarPoints: ['てくれる', 'くれるvsもらうvsあげる', 'ちゃった', 'とく'], desc: '别人为我做某事、日剧缩略语' },
+  { week: 2, title: '第2周', subtitle: '条件形（と・ば・たら・なら）', grammarPoints: ['と', 'ば', 'たら', 'なら'], desc: '四种"如果"的用法区别' },
+  { week: 3, title: '第3周', subtitle: '可能形 & 様態', grammarPoints: ['可能形', 'そうだ', 'ようだ', 'みたいだ'], desc: '"能做什么"和"看起来像什么"' },
+  { week: 4, title: '第4周', subtitle: '受身形 & 使役形', grammarPoints: ['受身形', '使役形', '使役受身'], desc: '被动和使役——日剧高频用法' },
+  { week: 5, title: '第5周', subtitle: '敬語基礎', grammarPoints: ['尊敬語', '謙譲語', '丁寧語', '敬語表現'], desc: '礼貌日语，日常交流必备' },
+  { week: 6, title: '第6周', subtitle: '助詞総まとめ', grammarPoints: ['に', 'で', 'を', 'が', 'は', 'へ', 'から', 'まで'], desc: '最 confusing 的助词大整理' },
+  { week: 7, title: '第7周', subtitle: '副詞 & 接続表現', grammarPoints: ['副詞', '接続詞', '〜ながら', '〜たり'], desc: '让句子更流畅的连接词' },
+  { week: 8, title: '第8周', subtitle: '総復習 & 実戦', grammarPoints: ['総復習'], desc: '全部语法综合练习 + 日剧实战' },
+];
+
+// ============================================================
+// DATA: Week 2 Curriculum (条件形)
+// ============================================================
+(function populateWeek2() {
+  WEEK_DATA[2] = {
+    title: '第2周',
+    subtitle: '条件形（と・ば・たら・なら）',
+    grammarPoints: ['と', 'ば', 'たら', 'なら'],
+    days: [
+      // Day 1: 条件形「と」—— 必然条件
+      {
+        title: '条件形「と」—— 必然结果',
+        type: '学习',
+        content: [
+          { type: 'explanation', title: '条件形「と」的核心用法',
+            text: '「と」表示<strong>必然的、自然的因果关系</strong>——只要发生了前项，就一定会发生后项。常用于：自然现象、机械操作、习惯。' },
+          { type: 'grammar', title: '结构',
+            table: {
+              headers: ['结构', '含义', '例句'],
+              rows: [
+                ['動辞書形／ない形 + と', '一…就…', '春になる<strong>と</strong>、桜が咲く。'],
+                ['い形容詞 + と', '如果…就…', '値段が高い<strong>と</strong>、買わない。'],
+                ['名詞 + だ + と', '如果是…', '日本人だ<strong>と</strong>、箸を使う。'],
+              ]
+            }
+          },
+          { type: 'example', title: '更多例句',
+            examples: [
+              { jp: 'このボタンを押すと、電源が入る。', cn: '按这个按钮，电源就会打开。' },
+              { jp: '毎日練習すると、上手になる。', cn: '每天练习的话，就会进步。' },
+              { jp: 'あそこを曲がると、駅が見える。', cn: '在那里转弯的话，就能看到车站。' },
+            ]
+          },
+          { type: 'tip', title: '💡 关键点',
+            text: '「と」的<strong>最大特点</strong>：后项不能接意志表现（命令、请求、邀请）。<br>❌ 日本に行く<strong>と</strong>、富士山を見よう。<br>✅ 日本に行っ<strong>たら</strong>、富士山を見よう。<br>记住：<strong>「と」= 自然规律，不是主观意愿。</strong>' },
+        ],
+        exercises: [
+          { id: 'w2d1e1', type: 'fill', desc: '填入正确的动词形式',
+            question: '春になる_____（と／ば／たら）、桜が咲く。',
+            answer: 'と', options: ['と', 'ば', 'たら'],
+            feedback: '自然现象用「と」表示必然结果。"一到春天樱花就开"是自然规律。' },
+          { id: 'w2d1e2', type: 'fill', desc: '填入正确的助词',
+            question: 'この道_____（を／に／で）まっすぐ行くと、駅に着く。',
+            answer: 'を', options: ['を', 'に', 'で'],
+            feedback: '表示"沿着这条路走"用「を」——移动性动词的路径用「を」。' },
+          { id: 'w2d1e3', type: 'choice', desc: '选择正确的句子',
+            question: '以下哪个句子使用了正确的「と」？',
+            options: [
+              { text: '日本に行くと、富士山を見よう。', correct: false },
+              { text: '日本に行くと、温泉に入れる。', correct: true },
+              { text: '日本に行くと、ください。', correct: false },
+            ],
+            feedback: '✅ 「と」的后项不能接意志表现（見よう＝邀请）。"能泡温泉"是可能表现，OK。' },
+          { id: 'w2d1e4', type: 'choice', desc: '选择正确的翻译',
+            question: '「毎日運動すると、健康になる」的意思是？',
+            options: [
+              { text: '如果每天运动，就会变得健康。', correct: true },
+              { text: '为了健康，每天运动。', correct: false },
+              { text: '因为运动，所以健康。', correct: false },
+            ],
+            feedback: '✅ 「と」表示"只要每天运动，就必然健康"——因果关系。' },
+        ]
+      },
+      // Day 2: 条件形「ば」—— 假设条件
+      {
+        title: '条件形「ば」—— 假设条件',
+        type: '学习',
+        content: [
+          { type: 'explanation', title: '条件形「ば」的核心用法',
+            text: '「ば」表示<strong>假设条件</strong>——如果前项成立，则后项也会成立。区别于「と」的必然性，「ば」更强调"如果…就…"的假设性。' },
+          { type: 'grammar', title: '动词ば形变形规则',
+            table: {
+              headers: ['动词类型', '变形规则', '例'],
+              rows: [
+                ['五段动词', '词尾う段→え段+ば', '書く→書け<strong>ば</strong>、読む→読め<strong>ば</strong>'],
+                ['一段动词', '去る+れば', '見る→見れ<strong>ば</strong>、食べる→食べれ<strong>ば</strong>'],
+                ['する/来る', '特殊变形', 'する→すれ<strong>ば</strong>、来る→来れ<strong>ば</strong>（くれ）'],
+                ['い形容詞', '去い+ければ', '高い→高けれ<strong>ば</strong>、安い→安けれ<strong>ば</strong>'],
+              ]
+            }
+          },
+          { type: 'example', title: '更多例句',
+            examples: [
+              { jp: '安ければ、買います。', cn: '如果便宜的话，就买。' },
+              { jp: '時間があれば、手伝ってください。', cn: '如果有时间的话，请帮忙。' },
+              { jp: '日本に住めば、日本語が上手になる。', cn: '如果住在日本，日语就会变好。' },
+            ]
+          },
+          { type: 'tip', title: '📌 记住：ば形 > と形 的场景',
+            text: '当你想表达<strong>建议、请求、愿望</strong>时，用「ば」而不是「と」：<br>✅ 時間があれば、行きましょう。（如果有时间，去吧）<br>❌ 時間があると、行きましょう。<br>「ば」的后项可以接意志表现，这是和「と」最大的区别。' },
+        ],
+        exercises: [
+          { id: 'w2d2e1', type: 'fill', desc: '将动词变为ば形',
+            question: '行く → 行け_____（填入ば形）',
+            answer: 'ば', options: ['ば', 'れば', 'ければ'],
+            feedback: '五段动词「行く」→ 词尾く→け + ば = 行け<strong>ば</strong>' },
+          { id: 'w2d2e2', type: 'fill', desc: '将动词变为ば形',
+            question: '食べる → 食べ_____（填入ば形）',
+            answer: 'れば', options: ['ば', 'れば', 'ければ'],
+            feedback: '一段动词「食べる」→ 去る + れば = 食べ<strong>れば</strong>' },
+          { id: 'w2d2e3', type: 'choice', desc: '选择正确的ば形',
+            question: '「書く」的ば形是什么？',
+            options: [
+              { text: '書けば', correct: true },
+              { text: '書けれ', correct: false },
+              { text: '書くば', correct: false },
+            ],
+            feedback: '✅ 五段动词：書く→書け + ば = 書けば' },
+          { id: 'w2d2e4', type: 'choice', desc: '选择正确的句子',
+            question: '想表达"如果便宜的话，我想买"，应该用哪个？',
+            options: [
+              { text: '安いと、買いたい。', correct: false },
+              { text: '安ければ、買いたい。', correct: true },
+              { text: '安いなら、買いたい。', correct: false },
+            ],
+            feedback: '✅ 「ば」适合表达个人愿望。"安いと"因为后项是意志表现而错误。"安いなら"也可以，但更强调"如果真的是便宜的话"。' },
+        ]
+      },
+      // Day 3: 复习 - と vs ば 对比
+      {
+        title: '条件形復習 — と vs ば 徹底比較',
+        type: '复习',
+        content: [
+          { type: 'explanation', title: '「と」vs「ば」核心区别',
+            text: '<table style="width:100%;border-collapse:collapse;margin:10px 0;"><tr style="background:var(--accent2);color:white;"><th style="padding:8px 12px;text-align:left;">对比项</th><th style="padding:8px 12px;text-align:left;">「と」</th><th style="padding:8px 12px;text-align:left;">「ば」</th></tr><tr><td style="padding:8px 12px;border-bottom:1px solid var(--rule);"><strong>因果关系</strong></td><td style="padding:8px 12px;border-bottom:1px solid var(--rule);">必然/自然结果</td><td style="padding:8px 12px;border-bottom:1px solid var(--rule);">假设条件</td></tr><tr><td style="padding:8px 12px;border-bottom:1px solid var(--rule);"><strong>后项意志</strong></td><td style="padding:8px 12px;border-bottom:1px solid var(--rule);">❌ 不可接</td><td style="padding:8px 12px;border-bottom:1px solid var(--rule);">✅ 可接</td></tr><tr><td style="padding:8px 12px;"><strong>使用场景</strong></td><td style="padding:8px 12px;">自然现象、习惯、操作</td><td style="padding:8px 12px;">假设、建议、愿望</td></tr></table>' },
+        ],
+        exercises: [
+          { id: 'w2d3e1', type: 'choice', desc: '1/4 — 选择正确的条件形',
+            question: '春になる_____、花見に行きましょう。',
+            options: [
+              { text: 'と', correct: false },
+              { text: 'ば', correct: true },
+              { text: '两个都可以', correct: false },
+            ],
+            feedback: '后项是「行きましょう」（邀请=意志表现），所以必须用「ば」。' },
+          { id: 'w2d3e2', type: 'choice', desc: '2/4',
+            question: 'このボタンを押す_____、電源が入る。',
+            options: [
+              { text: 'と', correct: true },
+              { text: 'ば', correct: false },
+              { text: '两个都可以', correct: false },
+            ],
+            feedback: '机械操作是必然结果，后项无意志，用「と」最自然。' },
+          { id: 'w2d3e3', type: 'choice', desc: '3/4',
+            question: '時間が_____、映画を見に行こう。',
+            options: [
+              { text: 'あれば', correct: true },
+              { text: 'あると', correct: false },
+              { text: 'あって', correct: false },
+            ],
+            feedback: '后项是「行こう」（邀请=意志），所以用「ば形」。' },
+          { id: 'w2d3e4', type: 'choice', desc: '4/4',
+            question: '毎日練習する_____、上手になる。',
+            options: [
+              { text: 'と', correct: true },
+              { text: 'ば', correct: false },
+              { text: '两个都可以', correct: true },
+            ],
+            feedback: '两者都可以！「と」强调"一练就进步"的必然性；「ば」强调"如果练的话"的假设性。语感略有不同，但都正确。' },
+        ]
+      },
+      // Day 4: 条件形「たら」—— 最万能的条件形
+      {
+        title: '条件形「たら」—— 最通用的条件形',
+        type: '学习',
+        content: [
+          { type: 'explanation', title: '「たら」—— 最安全的选择',
+            text: '「たら」是<strong>最万能、最安全</strong>的条件形，几乎可以替代所有其他条件形。核心含义：<strong>"如果…之后…"</strong>。它来源于「た」形+「ら」，所以天然带有"完成"的语感。' },
+          { type: 'grammar', title: '结构',
+            table: {
+              headers: ['结构', '含义', '例句'],
+              rows: [
+                ['た形 + ら', '如果…了的话', '日本に行っ<strong>たら</strong>、連絡します。'],
+                ['ない形 + かったら', '如果没有…的话', 'お金がなかっ<strong>たら</strong>、貸すよ。'],
+                ['い形容詞 + かったら', '如果…的话', '安かっ<strong>たら</strong>、買う。'],
+                ['名詞 + だったら', '如果是…的话', '日本人だっ<strong>たら</strong>、わかるはず。'],
+              ]
+            }
+          },
+          { type: 'example', title: '更多例句',
+            examples: [
+              { jp: '東京に着いたら、電話してください。', cn: '到了东京请打电话。' },
+              { jp: '暇だったら、遊びに来てね。', cn: '有空的话来玩哦。' },
+              { jp: '雨が降ったら、試合を中止する。', cn: '如果下雨就中止比赛。' },
+            ]
+          },
+          { type: 'tip', title: '💡 记住这个优先级',
+            text: '在学习条件形时，记住这个"安全顺序"：<br><strong>「たら」> 「ば」> 「と」</strong><br>「たら」最安全（几乎万能）；「ば」次之（不能用于必然结果）；「と」限制最多（不能接意志）。<br>日语母语者日常大量使用「たら」，日剧里出现频率最高。' },
+        ],
+        exercises: [
+          { id: 'w2d4e1', type: 'fill', desc: '填入正确的たら形',
+            question: '日本に行く → 日本に行っ_____（填入たら）',
+            answer: 'たら', options: ['たら', 'た', 'ったら'],
+            feedback: '「行く」的た形是「行って」，+ ら = 行ったら。' },
+          { id: 'w2d4e2', type: 'fill', desc: '填入正确的条件形',
+            question: '雨が_____（降る→条件形）、出かけない。',
+            answer: '降ったら', options: ['降ったら', '降れば', '降ると'],
+            feedback: '「降る」的た形是「降った」+ ら = 降ったら。也可以用「降れば」和「降ると」，但「降ったら」最自然。' },
+          { id: 'w2d4e3', type: 'choice', desc: '选择最合适的条件形',
+            question: '想表达"到了车站后给我打电话"，最自然的说法是？',
+            options: [
+              { text: '駅に着いたら、電話して。', correct: true },
+              { text: '駅に着けば、電話して。', correct: false },
+              { text: '駅に着くと、電話して。', correct: false },
+            ],
+            feedback: '✅ 「たら」最自然！"到了之后"天然带有完成语感。<br>❌ 「ば」可以但不太自然。<br>❌ 「と」后项不能接请求（意志表现）。' },
+          { id: 'w2d4e4', type: 'choice', desc: '选择正确的翻译',
+            question: '「暇だったら、遊びに来てね」是什么意思？',
+            options: [
+              { text: '因为有空，所以来玩。', correct: false },
+              { text: '如果有空的话，来玩哦。', correct: true },
+              { text: '一有空就来玩。', correct: false },
+            ],
+            feedback: '✅ 「たら」表示假设条件。"如果…的话"是最自然的翻译。' },
+        ]
+      },
+      // Day 5: 条件形「なら」—— 主题条件
+      {
+        title: '条件形「なら」—— 针对话题的条件',
+        type: '练习',
+        content: [
+          { type: 'explanation', title: '「なら」—— 针对对方话题',
+            text: '「なら」最大的特点是<strong>针对对方刚刚提到的话题</strong>给出条件或建议。可以理解为"既然你说到…，那么…"。<br>注意：其他条件形是"条件→结果"的顺序，而「なら」是"话题→针对话题的建议"。' },
+          { type: 'grammar', title: '结构',
+            table: {
+              headers: ['结构', '含义', '例句'],
+              rows: [
+                ['普通形 + なら', '如果是…的话', '日本料理<strong>なら</strong>、寿司がおいしいよ。'],
+                ['名詞 + なら', '说到…', '日曜日<strong>なら</strong>、暇です。'],
+                ['動辞書形 + なら', '如果打算…', '行く<strong>なら</strong>、早いほうがいい。'],
+              ]
+            }
+          },
+          { type: 'example', title: '四种条件形对比',
+            examples: [
+              { jp: '日本に行く<strong>と</strong>、富士山が見える。', cn: '一到日本就能看到富士山。（必然）' },
+              { jp: '日本に行け<strong>ば</strong>、富士山が見られる。', cn: '如果去日本的话，能看到富士山。（假设）' },
+              { jp: '日本に行っ<strong>たら</strong>、富士山を見たい。', cn: '如果去了日本的话，想看富士山。（完成假设）' },
+              { jp: '日本に行く<strong>なら</strong>、富士山をおすすめする。', cn: '既然要去日本的话，推荐富士山。（话题建议）' },
+            ]
+          },
+          { type: 'tip', title: '📌 记住这个黄金法则',
+            text: '四个条件形的选择口诀：<br><strong>「と」= 必然规律</strong>（春天到→花开）<br><strong>「ば」= 假设条件</strong>（如果便宜→就买）<br><strong>「たら」= 万能安全</strong>（到了→打电话）<br><strong>「なら」= 话题建议</strong>（说到日本→推荐寿司）' },
+        ],
+        exercises: [
+          { id: 'w2d5e1', type: 'fill', desc: '选择正确的条件形',
+            question: '日本語_____（と／ば／たら／なら）、林先生が詳しいですよ。',
+            answer: 'なら', options: ['と', 'ば', 'たら', 'なら'],
+            feedback: '「なら」用于针对对方话题给出建议。"说到日语的话，林先生很了解。"' },
+          { id: 'w2d5e2', type: 'choice', desc: '选择最合适的条件形',
+            question: '朋友说"我想去京都"，你推荐什么？',
+            options: [
+              { text: '京都に行くなら、清水寺がおすすめ。', correct: true },
+              { text: '京都に行くと、清水寺がある。', correct: false },
+              { text: '京都に行ったら、清水寺。', correct: false },
+            ],
+            feedback: '✅ 「なら」最合适！针对对方的话题（想去京都）给出建议。' },
+          { id: 'w2d5e3', type: 'choice', desc: '四种条件形综合',
+            question: '以下哪个句子中「と」的使用是正确的？',
+            options: [
+              { text: '日本に行くと、富士山を見よう。', correct: false },
+              { text: '春になると、暖かくなる。', correct: true },
+              { text: '時間があると、手伝って。', correct: false },
+            ],
+            feedback: '✅ 「春になると暖かくなる」是自然规律，用「と」正确。<br>❌ 其他两句后项包含意志表现（見よう、手伝って）。' },
+          { id: 'w2d5e4', type: 'choice', desc: '综合选择',
+            question: '想表达"如果我是你，就不会这样做"，最自然的说法是？',
+            options: [
+              { text: '私があなたなら、そうしない。', correct: true },
+              { text: '私があなただと、そうしない。', correct: false },
+              { text: '私があなただったら、そうしない。', correct: true },
+            ],
+            feedback: '两者都可以！「なら」= "如果我是你的立场"；「だったら」= "如果我是你（假设）"。「なら」更干脆利落。' },
+        ]
+      },
+      // Day 6: 对话练习 - 条件形综合
+      {
+        title: '条件形総合練習 — 日剧台词分析',
+        type: '对话',
+        content: [
+          { type: 'explanation', title: '🎬 日剧中的条件形',
+            text: '日剧中条件形出现频率极高！以下台词来自经典日剧，看看你能不能用今天学的知识分析它们。' },
+          { type: 'example', title: '经典台词分析',
+            examples: [
+              { jp: '「言わなきゃ<strong>わかんない</strong>だろ。」（言わなければわからない）', cn: '不说的话怎么会知道呢。——「ば」假设条件' },
+              { jp: '「こんなにたくさん<strong>もらったら</strong>、困るよ。」', cn: '拿到这么多的话，我会困扰的。——「たら」完成假设' },
+              { jp: '「やる<strong>なら</strong>、最後までやれ。」', cn: '既然要做的话，就做到最后。——「なら」话题建议' },
+            ]
+          },
+        ],
+        exercises: [
+          { id: 'w2d6e1', type: 'choice', desc: '1/4 — 分析日剧台词',
+            question: '「言わなきゃわかんないだろ」中的「言わなきゃ」是以下哪个的缩略？',
+            options: [
+              { text: '言わなければ', correct: true },
+              { text: '言わないと', correct: false },
+              { text: '言わなかったら', correct: false },
+            ],
+            feedback: '✅ 「言わなきゃ」= 「言わなければ」的口语缩略形。"不说的话…"用ば形表假设条件。' },
+          { id: 'w2d6e2', type: 'choice', desc: '2/4',
+            question: '「やるなら、最後までやれ」最适合用什么条件形翻译？',
+            options: [
+              { text: '如果做的话，就要做到最后。', correct: true },
+              { text: '一做就做到最后。', correct: false },
+              { text: '如果做了的话，就做到最后。', correct: false },
+            ],
+            feedback: '✅ 「なら」= 针对"做"这个话题给出建议。"既然要做…"的语感。' },
+          { id: 'w2d6e3', type: 'choice', desc: '3/4',
+            question: '「明日雨なら、試合は中止」这句话省略了什么？',
+            options: [
+              { text: '明日雨<strong>なら</strong>', correct: true },
+              { text: '明日雨<strong>だと</strong>', correct: false },
+              { text: '明日雨<strong>だったら</strong>', correct: false },
+            ],
+            feedback: '✅ 「名詞 + なら」省略了「だ」。正式说法是「明日雨<strong>なら</strong>」。' },
+          { id: 'w2d6e4', type: 'writing', desc: '4/4 — 自由写作',
+            question: '用条件形（と/ば/たら/なら中的任意一个）写一个句子，描述"如果你去日本，你想做什么"。',
+            feedback: '示例：日本に行っ<strong>たら</strong>、富士山を見たいです。<br>日本に行く<strong>なら</strong>、温泉に入りたい。<br>注意：不要用「と」+ 意志表现。' },
+        ]
+      },
+      // Day 7: 周测
+      {
+        title: '第2週テスト — 条件形',
+        type: '测试',
+        content: [
+          { type: 'explanation', title: '📝 第2周综合测试',
+            text: '10道题，涵盖本周全部条件形内容。通过标准：80%（8/10）。' },
+        ],
+        exercises: [
+          { id: 'w2d7e1', type: 'choice', desc: '1/10',
+            question: '「春になると、桜が咲く」中的「と」表示什么？',
+            options: [
+              { text: '假设条件', correct: false },
+              { text: '必然结果（自然规律）', correct: true },
+              { text: '话题建议', correct: false },
+            ],
+            feedback: '「と」表示必然的自然规律——春天到了樱花就会开。' },
+          { id: 'w2d7e2', type: 'choice', desc: '2/10',
+            question: '「駅に着いたら、電話してください」中「たら」最合适的解释是？',
+            options: [
+              { text: '如果到了车站的话', correct: true },
+              { text: '一到车站就', correct: false },
+              { text: '既然到了车站', correct: false },
+            ],
+            feedback: '「たら」= "如果…了的话"，带有完成语感，是最通用的条件形。' },
+          { id: 'w2d7e3', type: 'choice', desc: '3/10',
+            question: '以下哪个动词的ば形是正确的？',
+            options: [
+              { text: '食べる → 食べば', correct: false },
+              { text: '書く → 書けば', correct: true },
+              { text: '来る → 来れば', correct: false },
+            ],
+            feedback: '五段动词「書く」→ 書け + ば = 書けば。一段动词「食べる」→ 食べれば。' },
+          { id: 'w2d7e4', type: 'choice', desc: '4/10',
+            question: '「日本料理なら、寿司がおいしい」最适合用在什么场景？',
+            options: [
+              { text: '朋友说想吃日本料理时', correct: true },
+              { text: '描述日本料理的特点时', correct: false },
+              { text: '假设去日本餐厅时', correct: false },
+            ],
+            feedback: '「なら」针对对方话题。朋友说"想吃日本料理"时，你推荐寿司最合适。' },
+          { id: 'w2d7e5', type: 'choice', desc: '5/10',
+            question: '以下哪个句子中「と」的使用是错误的？',
+            options: [
+              { text: '左に曲がると、駅がある。', correct: false },
+              { text: '時間があると、手伝ってください。', correct: true },
+              { text: '雨が降ると、試合が中止だ。', correct: false },
+            ],
+            feedback: '「時間があると、手伝ってください」的后项是请求（意志表现），应改用「たら」或「ば」。' },
+          { id: 'w2d7e6', type: 'choice', desc: '6/10',
+            question: '「暇だったら、遊びに来てね」中「暇だったら」是怎么变来的？',
+            options: [
+              { text: '暇だ + ったら', correct: true },
+              { text: '暇 + だったら', correct: false },
+              { text: '暇な + かったら', correct: false },
+            ],
+            feedback: '名詞+だったら：暇だ（な形容詞）+ ったら = 暇だったら。' },
+          { id: 'w2d7e7', type: 'choice', desc: '7/10',
+            question: '四种条件形中，哪个最万能、最安全？',
+            options: [
+              { text: 'と', correct: false },
+              { text: 'ば', correct: false },
+              { text: 'たら', correct: true },
+              { text: 'なら', correct: false },
+            ],
+            feedback: '「たら」最万能！几乎可以替代所有其他条件形，且后项可以接任何表现。' },
+          { id: 'w2d7e8', type: 'choice', desc: '8/10',
+            question: '「行くなら、早いほうがいい」的「なら」表示什么？',
+            options: [
+              { text: '假设条件', correct: false },
+              { text: '针对话题的建议', correct: true },
+              { text: '自然规律', correct: false },
+            ],
+            feedback: '「なら」针对"要去"这个话题给出建议"早点去比较好"。' },
+          { id: 'w2d7e9', type: 'choice', desc: '9/10',
+            question: '以下哪个条件形不能用于必然的自然现象？',
+            options: [
+              { text: 'と', correct: false },
+              { text: 'ば', correct: true },
+              { text: 'たら', correct: false },
+            ],
+            feedback: '「ば」表示假设条件，不适合表达必然的自然现象。"春になれば桜が咲く"虽然语法上正确，但没有「と」自然。' },
+          { id: 'w2d7e10', type: 'choice', desc: '10/10',
+            question: '日剧台词「言わなきゃわかんない」中的「なきゃ」是什么的缩略？',
+            options: [
+              { text: 'なければ', correct: true },
+              { text: 'なかったら', correct: false },
+              { text: 'ないと', correct: false },
+            ],
+            feedback: '✅ 「なきゃ」= 「なければ」的口语缩略形。ば形在现代口语中经常缩略。' },
+        ]
+      }
+    ]
+  };
+})();
   tanaka: {
     id: 'tanaka',
     name: '田中先生',
@@ -980,24 +1430,25 @@ const MENTORS = {
 const STORAGE_KEY = 'nihongo_mori_progress';
 
 function loadState() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      // 兼容旧版本数据：补齐缺失字段
-      if (!parsed.allGrammarPoints) parsed.allGrammarPoints = [];
-      if (!parsed.grammarMastery) parsed.grammarMastery = {};
-      // 给旧的 grammarMastery 补齐 status/ weeklySnapshots
-      Object.entries(parsed.grammarMastery).forEach(([name, g]) => {
-        if (!g.status) g.status = 'new';
-        if (!g.lastWeekScore) g.lastWeekScore = 0;
-        if (!g.weeklySnapshots) g.weeklySnapshots = [];
-      });
-      return parsed;
-    }
-  } catch(e) {}
-  return getDefaultState();
-}
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // 兼容旧版本数据：补齐缺失字段
+        if (!parsed.allGrammarPoints) parsed.allGrammarPoints = [];
+        if (!parsed.grammarMastery) parsed.grammarMastery = {};
+        if (!parsed.completedWeeks) parsed.completedWeeks = [];
+        // 给旧的 grammarMastery 补齐 status/ weeklySnapshots
+        Object.entries(parsed.grammarMastery).forEach(([name, g]) => {
+          if (!g.status) g.status = 'new';
+          if (!g.lastWeekScore) g.lastWeekScore = 0;
+          if (!g.weeklySnapshots) g.weeklySnapshots = [];
+        });
+        return parsed;
+      }
+    } catch(e) {}
+    return getDefaultState();
+  }
 
 function getDefaultState() {
   const state = {
@@ -1014,14 +1465,18 @@ function getDefaultState() {
     unlockedDay: 1,
     weekComplete: false,
     selectedMentor: null,
-    // 新增：所有学过的语法点列表（跨周）
+    // 所有学过的语法点列表（跨周）
     allGrammarPoints: [],
+    // 已完成周数列表
+    completedWeeks: [],
   };
-  // Initialize grammar mastery with status
-  WEEK_DATA[1].grammarPoints.forEach(g => {
-    state.grammarMastery[g] = { score: 0, attempts: 0, correct: 0, status: 'new', lastWeekScore: 0, weeklySnapshots: [] };
-    state.allGrammarPoints.push(g);
-  });
+  // Initialize grammar mastery from week 1
+  if (WEEK_DATA[1]) {
+    WEEK_DATA[1].grammarPoints.forEach(g => {
+      state.grammarMastery[g] = { score: 0, attempts: 0, correct: 0, status: 'new', lastWeekScore: 0, weeklySnapshots: [] };
+      state.allGrammarPoints.push(g);
+    });
+  }
   return state;
 }
 
@@ -1111,12 +1566,12 @@ function updateGrammarMastery(name, isCorrect) {
 // Better grammar mapping by day
 function getGrammarForDay(dayNum) {
   const week = WEEK_DATA[state.currentWeek];
+  if (!week) return '';
   const gps = week.grammarPoints;
-  if (dayNum <= 2) return gps[0]; // てくれる
-  if (dayNum === 3) return gps[1]; // くれるvsもらうvsあげる
-  if (dayNum <= 5) return gps[2]; // ちゃった
-  if (dayNum === 6) return gps[3]; // とく
-  return gps[0];
+  if (!gps || gps.length === 0) return '';
+  // Generic mapping: distribute grammar points across days
+  const idx = Math.min(Math.floor((dayNum - 1) * gps.length / 7), gps.length - 1);
+  return gps[idx] || gps[0];
 }
 
 // Show mentor message in chat
@@ -1158,10 +1613,33 @@ function render() {
 
 function renderDashboard() {
   const week = WEEK_DATA[state.currentWeek];
+  if (!week) {
+    container.innerHTML = '<div class="fade-in" style="text-align:center;padding:60px 20px;"><h2>🎉 全部课程已完成！</h2><p style="margin-top:12px;color:var(--muted);">更多内容即将上线。</p></div>';
+    return;
+  }
   const overallMastery = getOverallMastery();
   const totalDays = week.days.length;
   const completedDays = week.days.filter((_, i) => isDayComplete(state.currentWeek, i + 1)).length;
   const unlockedDays = week.days.filter((_, i) => isDayUnlocked(state.currentWeek, i + 1)).length;
+  const isWeekComplete = completedDays >= totalDays;
+
+  // Week navigation bar
+  let weekNav = '<div class="week-nav-bar">';
+  CURRICULUM.forEach(c => {
+    const isCurrent = c.week === state.currentWeek;
+    const isCompleted = state.completedWeeks.includes(c.week);
+    const isLocked = c.week > state.currentWeek + 1 || (c.week > state.currentWeek && !isWeekComplete);
+    let cls = 'week-nav-btn';
+    if (isCurrent) cls += ' active';
+    if (isCompleted) cls += ' completed';
+    if (isLocked) cls += ' locked';
+    weekNav += `<button class="${cls}" data-week="${c.week}" ${isLocked ? 'disabled' : ''}>
+      <span class="wnb-num">${c.week === 1 ? '1' : c.week === 2 ? '2' : c.week === 3 ? '3' : c.week === 4 ? '4' : c.week === 5 ? '5' : c.week === 6 ? '6' : c.week === 7 ? '7' : '8'}</span>
+      <span class="wnb-label">${c.week === 1 ? '授受' : c.week === 2 ? '条件' : c.week === 3 ? '可能' : c.week === 4 ? '受身' : c.week === 5 ? '敬語' : c.week === 6 ? '助詞' : c.week === 7 ? '接続' : '復習'}</span>
+      ${isCompleted ? '<span class="wnb-check">✓</span>' : ''}
+    </button>`;
+  });
+  weekNav += '</div>';
 
   // 显示所有语法点（包括历史复习的），用三色状态
   let grammarChips = '';
@@ -1197,12 +1675,31 @@ function renderDashboard() {
     </button>`;
   });
 
+  // Next week button
+  let nextWeekBtn = '';
+  const hasNextWeek = CURRICULUM.some(c => c.week === state.currentWeek + 1);
+  if (isWeekComplete && hasNextWeek) {
+    const nextExists = !!WEEK_DATA[state.currentWeek + 1];
+    nextWeekBtn = `<div style="text-align:center;margin-top:16px;">
+      <button class="next-week-btn" onclick="goToNextWeek()">
+        ${nextExists ? '▶ 进入第' + (state.currentWeek + 1) + '周' : '📋 查看课程计划'}
+      </button>
+    </div>`;
+  } else if (isWeekComplete && !hasNextWeek) {
+    nextWeekBtn = `<div style="text-align:center;margin-top:16px;padding:16px;background:var(--accent2-glow);border-radius:var(--radius);">
+      <strong>🎉 恭喜完成全部课程！</strong>
+      <p style="font-size:13px;color:var(--muted);margin-top:4px;">继续复习红色语法点，巩固所学内容。</p>
+    </div>`;
+  }
+
   container.innerHTML = `
     <div class="fade-in">
       <div class="dashboard-hero">
         <h1>🌲 おかえりなさい <span>${state.streak > 0 ? '🔥' : ''}</span></h1>
-        <p>每周聚焦 2-3 个核心语法，彻底吃透日语句式。你的目标是——看懂日剧，日常交流。</p>
+        <p style="font-size:14px;color:var(--ink-soft);">${week.title}：${week.subtitle}</p>
       </div>
+
+      ${weekNav}
 
       <div class="stats-bar">
         <div class="stat-card">
@@ -1226,13 +1723,14 @@ function renderDashboard() {
       <div class="week-card">
         <div class="week-header">
           <div>
-            <div class="week-title">${week.title}：${week.subtitle}</div>
-            <div class="week-subtitle">${completedDays === totalDays ? '🎉 本周已完成！' : '完成每日任务，解锁下一天'}</div>
+            <div class="week-title">第${state.currentWeek}周：${week.subtitle}</div>
+            <div class="week-subtitle">${isWeekComplete ? '🎉 本周已完成！' : '完成每日任务，解锁下一天'}</div>
           </div>
-          <span class="week-badge">${completedDays >= totalDays ? '✅ 已完成' : '进行中'}</span>
+          <span class="week-badge">${isWeekComplete ? '✅ 已完成' : '进行中'}</span>
         </div>
         <div class="week-grammars">${grammarChips}</div>
         <div class="day-grid">${dayBtns}</div>
+        ${nextWeekBtn}
       </div>
 
       <div class="mastery-section">
@@ -1266,12 +1764,20 @@ function renderDashboard() {
       renderDay(state.currentWeek, state.currentDay);
     });
   });
+
+  // Bind week nav buttons
+  container.querySelectorAll('.week-nav-btn:not(.locked)').forEach(btn => {
+    btn.addEventListener('click', () => {
+      goToWeek(parseInt(btn.dataset.week));
+    });
+  });
 }
 
 function renderDay(weekNum, dayNum) {
   const week = WEEK_DATA[weekNum];
+  if (!week) { render(); return; }
   const day = week.days[dayNum - 1];
-  if (!day) return;
+  if (!day) { render(); return; }
 
   const isComplete = isDayComplete(weekNum, dayNum);
   const isLastDay = dayNum === week.days.length;
@@ -1341,10 +1847,12 @@ function renderDay(weekNum, dayNum) {
   let completionHtml = '';
   if (isComplete && isLastDay) {
     const score = getDayScore(weekNum, dayNum);
+    const hasNext = CURRICULUM.some(c => c.week === weekNum + 1);
     completionHtml = `<div class="completion-banner">
-      <h3>🎉 第1周完成！</h3>
+      <h3>🎉 第${weekNum}周完成！</h3>
       <p>测试得分：${score ? score.correct + '/' + score.total : '已完成'} | 整体掌握度：${getOverallMastery()}%</p>
-      <p style="margin-top:8px;font-size:13px;color:var(--muted)">下周继续加油！新しい文法をマスターしよう！</p>
+      ${hasNext ? `<button class="next-week-btn" style="margin-top:10px;padding:10px 24px;font-size:15px;" onclick="goToNextWeek()">▶ 进入第${weekNum + 1}周</button>` : ''}
+      <p style="margin-top:8px;font-size:13px;color:var(--muted)">${hasNext ? '下周继续加油！' : '恭喜完成全部课程！'}新しい文法をマスターしよう！</p>
     </div>`;
   } else if (isComplete) {
     completionHtml = `<div class="completion-banner" style="border-color:var(--accent2);background:var(--accent2-glow)">
@@ -1687,6 +2195,7 @@ function checkDayComplete(weekNum, dayNum) {
 
           <div style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
             <button class="submit-btn" onclick="render()">返回主页</button>
+            ${CURRICULUM.some(c => c.week === weekNum + 1) ? `<button class="submit-btn" style="background:var(--accent2);" onclick="goToNextWeek()">▶ 进入第${weekNum + 1}周</button>` : ''}
           </div>
         </div>`;
 
@@ -1721,6 +2230,69 @@ function goToNextDay() {
   renderDay(state.currentWeek, state.currentDay);
 }
 
+// ============================================================
+// WEEK PROGRESSION
+// ============================================================
+function goToNextWeek() {
+  const nextWeek = state.currentWeek + 1;
+  const curriculum = CURRICULUM.find(c => c.week === nextWeek);
+  if (!curriculum) {
+    alert('🎉 恭喜你完成了全部 ' + state.currentWeek + ' 周的课程！更多内容开发中。');
+    render();
+    return;
+  }
+
+  // Ensure WEEK_DATA for this week exists (generate if not)
+  if (!WEEK_DATA[nextWeek] && curriculum) {
+    alert('⚠️ 第' + nextWeek + '周课程正在准备中，请先完成当前周的复习。');
+    return;
+  }
+
+  // Take snapshot of current week before moving on
+  if (!state.weekComplete) {
+    takeWeeklySnapshots();
+  }
+
+  // Mark current week as completed
+  if (!state.completedWeeks.includes(state.currentWeek)) {
+    state.completedWeeks.push(state.currentWeek);
+  }
+
+  // Push new grammar points from next week
+  const nextWeekData = WEEK_DATA[nextWeek];
+  if (nextWeekData && nextWeekData.grammarPoints) {
+    nextWeekData.grammarPoints.forEach(g => {
+      if (!state.grammarMastery[g]) {
+        state.grammarMastery[g] = { score: 0, attempts: 0, correct: 0, status: 'new', lastWeekScore: 0, weeklySnapshots: [] };
+        if (!state.allGrammarPoints.includes(g)) {
+          state.allGrammarPoints.push(g);
+        }
+      }
+    });
+  }
+
+  // Reset week state
+  state.currentWeek = nextWeek;
+  state.currentDay = 1;
+  state.unlockedDay = 1;
+  state.weekComplete = false;
+  saveState();
+  render();
+}
+
+function goToWeek(weekNum) {
+  if (weekNum < 1 || weekNum > state.currentWeek + 1) return;
+  if (weekNum > state.currentWeek) {
+    goToNextWeek();
+    return;
+  }
+  state.currentWeek = weekNum;
+  state.currentDay = 1;
+  state.unlockedDay = 1;
+  saveState();
+  render();
+}
+
 function bindExerciseListeners(weekNum, dayNum, exercises) {
   // Choice buttons
   document.querySelectorAll('.choice-group .choice-btn:not(.disabled)').forEach(btn => {
@@ -1743,8 +2315,31 @@ function bindExerciseListeners(weekNum, dayNum, exercises) {
 // ============================================================
 function renderProgress() {
   const week = WEEK_DATA[state.currentWeek];
+  if (!week) {
+    container.innerHTML = '<div class="fade-in" style="text-align:center;padding:60px 20px;"><h2>🎉 全部课程已完成！</h2></div>';
+    return;
+  }
   const totalDays = week.days.length;
   const completedDays = week.days.filter((_, i) => isDayComplete(state.currentWeek, i + 1)).length;
+  const isWeekComplete = completedDays >= totalDays;
+
+  // Week navigation bar
+  let weekNav = '<div class="week-nav-bar">';
+  CURRICULUM.forEach(c => {
+    const isCurrent = c.week === state.currentWeek;
+    const isCompleted = state.completedWeeks.includes(c.week);
+    const isLocked = c.week > state.currentWeek + 1 || (c.week > state.currentWeek && !isWeekComplete);
+    let cls = 'week-nav-btn';
+    if (isCurrent) cls += ' active';
+    if (isCompleted) cls += ' completed';
+    if (isLocked) cls += ' locked';
+    weekNav += `<button class="${cls}" data-week="${c.week}" ${isLocked ? 'disabled' : ''}>
+      <span class="wnb-num">${c.week}</span>
+      <span class="wnb-label">${c.week === 1 ? '授受' : c.week === 2 ? '条件' : c.week === 3 ? '可能' : c.week === 4 ? '受身' : c.week === 5 ? '敬語' : c.week === 6 ? '助詞' : c.week === 7 ? '接続' : '復習'}</span>
+      ${isCompleted ? '<span class="wnb-check">✓</span>' : ''}
+    </button>`;
+  });
+  weekNav += '</div>';
 
   let dayHistory = '';
   week.days.forEach((day, i) => {
@@ -1763,7 +2358,7 @@ function renderProgress() {
   });
 
   let masteryHtml = '';
-  const allGps = state.allGrammarPoints.length > 0 ? state.allGrammarPoints : week.grammarPoints;
+  const allGps = state.allGrammarPoints.length > 0 ? state.allGrammarPoints : (week ? week.grammarPoints : []);
   allGps.forEach(g => {
     const m = getGrammarMastery(g);
     const st = getStatusLabel(g);
@@ -1798,8 +2393,10 @@ function renderProgress() {
     <div class="fade-in">
       <div style="margin-bottom:24px;">
         <h2 style="font-size:20px;font-weight:700;">📈 学习进度</h2>
-        <p style="font-size:13px;color:var(--muted);">${completedDays}/${totalDays} 天完成 · 共 ${state.totalExercises} 道练习 · ${state.totalCorrect} 道正确</p>
+        <p style="font-size:13px;color:var(--muted);">第${state.currentWeek}周 · ${completedDays}/${totalDays} 天完成 · 共 ${state.totalExercises} 道练习 · ${state.totalCorrect} 道正确</p>
       </div>
+
+      ${weekNav}
 
       ${redAlert}
 
@@ -1815,6 +2412,13 @@ function renderProgress() {
       </div>
     </div>
   `;
+
+  // Bind week nav buttons
+  container.querySelectorAll('.week-nav-btn:not(.locked)').forEach(btn => {
+    btn.addEventListener('click', () => {
+      goToWeek(parseInt(btn.dataset.week));
+    });
+  });
 }
 
 // ============================================================
