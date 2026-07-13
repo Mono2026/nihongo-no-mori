@@ -251,6 +251,31 @@ ul, ol { list-style: none; }
 }
 .content-card .tip-box strong { color: #8D6E00; }
 
+/* ============================================
+   Ruby / Furigana
+   ============================================ */
+ruby { ruby-align: center; cursor: help; }
+ruby rt { font-size: 0.6em; color: var(--muted); font-weight: 400; letter-spacing: 0.5px; }
+
+/* ============================================
+   Word Bank
+   ============================================ */
+.wb-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.wb-search { flex: 1; min-width: 200px; padding: 10px 16px; border: 2px solid var(--rule); border-radius: var(--radius-sm); font-size: 14px; transition: var(--transition); }
+.wb-search:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.wb-count { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.wb-word-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.wb-word-card {
+  background: var(--bg2); border: 1px solid var(--rule); border-radius: var(--radius-sm);
+  padding: 12px 16px; display: flex; align-items: center; gap: 10px; transition: var(--transition);
+  cursor: pointer; position: relative;
+}
+.wb-word-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.wb-word-card.learned { background: var(--accent2-glow); border-color: var(--accent2); }
+.wb-word-card.learned::after { content: '✓'; position: absolute; top: 2px; right: 6px; font-size: 11px; color: var(--accent2); font-weight: 700; }
+.wb-word-kanji { font-size: 16px; font-weight: 600; font-family: var(--font-jp); min-width: 50px; }
+.wb-word-reading { font-size: 13px; color: var(--muted); font-family: var(--font-jp); }
+
 /* Grammar Table */
 .grammar-table {
   width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px;
@@ -511,6 +536,7 @@ ul, ol { list-style: none; }
       <nav class="header-nav">
         <button class="nav-btn active" data-view="dashboard">主页</button>
         <button class="nav-btn" data-view="progress">进度</button>
+        <button class="nav-btn" data-view="wordbank">单词</button>
       </nav>
     </div>
   </header>
@@ -943,6 +969,237 @@ const CURRICULUM = [
   { week: 7, title: '第7周', subtitle: '副詞 & 接続表現', grammarPoints: ['副詞', '接続詞', '〜ながら', '〜たり'], desc: '让句子更流畅的连接词' },
   { week: 8, title: '第8周', subtitle: '総復習 & 実戦', grammarPoints: ['総復習'], desc: '全部语法综合练习 + 日剧实战' },
 ];
+
+// ============================================================
+// VOCABULARY BANK: N3+ words with furigana readings
+// ============================================================
+// Format: { kanji: 'reading', ... }
+// Sorted by length descending for greedy matching
+const WORD_BANK = {
+  // Week 1: 授受表現 & 口語縮約形
+  '授受': 'じゅじゅ', '表現': 'ひょうげん', '口語': 'こうご', '縮約': 'しゅくやく',
+  '縮約形': 'しゅくやくけい', '受益者': 'じゅえきしゃ', '主体': 'しゅたい',
+  '動作': 'どうさ', '間接': 'かんせつ', '目的語': 'もくてきご', '文法': 'ぶんぽう',
+  '構造': 'こうぞう', '厳しい': 'きびしい', '厳': 'きび', '監督': 'かんとく',
+  '台詞': 'せりふ', '分析': 'ぶんせき', '変換': 'へんかん', '規則': 'きそく',
+  '速査': 'そくさ', '変形': 'へんけい', '略語': 'りゃくご', '口語体': 'こうごたい',
+  '正式体': 'せいしきたい', '丁寧体': 'ていねいたい', '常体': 'じょうたい',
+  '編む': 'あむ', '編んで': 'あんで', '説明': 'せつめい',
+  '意味': 'いみ', '動作': 'どうさ', '授受動詞': 'じゅじゅどうし',
+  '立場': 'たちば', '視点': 'してん', '方向': 'ほうこう',
+  '未来': 'みらい', '過去': 'かこ', '現在': 'げんざい',
+  '自然': 'しぜん', '会話': 'かいわ', '例文': 'れいぶん',
+  '練習問題': 'れんしゅうもんだい', '正解': 'せいかい',
+  '不正解': 'ふせいかい', '理解度': 'りかいど',
+  '習得': 'しゅうとく', '復習': 'ふくしゅう', '予習': 'よしゅう',
+
+  // Week 2: 条件形
+  '条件形': 'じょうけんけい', '条件': 'じょうけん', '仮定': 'かてい',
+  '必然': 'ひつぜん', '必然的': 'ひつぜんてき', '因果関係': 'いんがかんけい',
+  '前項': 'ぜんこう', '後項': 'こうこう', '意志表現': 'いしひょうげん',
+  '主観': 'しゅかん', '客観': 'きゃっかん', '結果': 'けっか',
+  '原因': 'げんいん', '現象': 'げんしょう', '機械': 'きかい',
+  '操作': 'そうさ', '習慣': 'しゅうかん', '比喻': 'ひゆ',
+  '提案': 'ていあん', '依頼': 'いらい', '命令': 'めいれい',
+  '禁止': 'きんし', '可能': 'かのう', '希望': 'きぼう',
+  '推量': 'すいりょう', '伝聞': 'でんぶん', '様態': 'ようたい',
+  '話題': 'わだい', '勧め': 'すすめ', '忠告': 'ちゅうこく',
+  '注意': 'ちゅうい', '強調': 'きょうちょう', '対比': 'たいひ',
+  '比較': 'ひかく', '選択': 'せんたく', '同時': 'どうじ',
+  '順序': 'じゅんじょ', '理由': 'りゆう', '目的': 'もくてき',
+  '手段': 'しゅだん', '方法': 'ほうほう', '程度': 'ていど',
+  '変化': 'へんか', '傾向': 'けいこう', '頻度': 'ひんど',
+  '数量': 'すうりょう', '順番': 'じゅんばん', '番目': 'ばんめ',
+  '場合': 'ばあい', '時': 'とき', '頃': 'ころ',
+  '最中': 'さいちゅう', '間': 'あいだ', '以内': 'いない',
+  '以外': 'いがい', '以上': 'いじょう', '以下': 'いか',
+  '値段': 'ねだん', '電源': 'でんげん', '試合': 'しあい',
+  '中止': 'ちゅうし', '運動': 'うんどう', '健康': 'けんこう',
+  '経済': 'けいざい', '政治': 'せいじ', '文化': 'ぶんか',
+  '社会': 'しゃかい', '世界': 'せかい', '地域': 'ちいき',
+  '場所': 'ばしょ', '位置': 'いち', '方向': 'ほうこう',
+  '入口': 'いりぐち', '出口': 'でぐち', '交差点': 'こうさてん',
+  '信号': 'しんごう', '道路': 'どうろ', '電車': 'でんしゃ',
+  '新幹線': 'しんかんせん', '飛行機': 'ひこうき', '案内': 'あんない',
+  '案内': 'あんない', '招待': 'しょうたい',
+  '徹底': 'てってい', '比較': 'ひかく', '黄金': 'おうごん',
+  '法則': 'ほうそく', '安全': 'あんぜん', '優先': 'ゆうせん',
+  '順位': 'じゅんい', '会話': 'かいわ', '勉強': 'べんきょう',
+  '練習': 'れんしゅう', '学習': 'がくしゅう', '教育': 'きょういく',
+  '指導': 'しどう', '理解': 'りかい', '記憶': 'きおく',
+
+  // Week 3 (planned): 可能形 & 様態
+  '可能形': 'かのうけい', '様態': 'ようたい',
+  '見える': 'みえる', '聞こえる': 'きこえる',
+  '出来る': 'できる', '可能': 'かのう',
+
+  // Week 4 (planned): 受身形 & 使役形
+  '受身形': 'うけみけい', '使役形': 'しえきけい', '使役受身': 'しえきうけみ',
+  '受身': 'うけみ', '使役': 'しえき', '被害': 'ひがい',
+
+  // Week 5 (planned): 敬語
+  '敬語': 'けいご', '尊敬語': 'そんけいご', '謙譲語': 'けんじょうご',
+  '丁寧語': 'ていねいご', '敬語表現': 'けいごひょうげん',
+
+  // Week 6 (planned): 助詞
+  '助詞': 'じょし', '格助詞': 'かくじょし', '係助詞': 'かかりじょし',
+  '副助詞': 'ふくじょし', '接続助詞': 'せつぞくじょし', '終助詞': 'しゅうじょし',
+
+  // Week 7 (planned): 副詞 & 接続
+  '副詞': 'ふくし', '接続詞': 'せつぞくし', '接続表現': 'せつぞくひょうげん',
+
+  // Common N3+ words from explanations
+  '核心': 'かくしん', '用法': 'ようほう', '特徴': 'とくちょう',
+  '注意点': 'ちゅういてん', '重要': 'じゅうよう', '必須': 'ひっす',
+  '基本': 'きほん', '基礎': 'きそ', '応用': 'おうよう',
+  '実践': 'じっせん', '実戦': 'じっせん', '実用': 'じつよう',
+  '日常': 'にちじょう', '生活': 'せいかつ', '旅行': 'りょこう',
+  '目的': 'もくてき', '目標': 'もくひょう', '能力': 'のうりょく',
+  '表現力': 'ひょうげんりょく', '語彙力': 'ごいりょく',
+  '聞く力': 'きくちから', '話す力': 'はなすちから',
+  '読む力': 'よむちから', '書く力': 'かくちから',
+  '絵文字': 'えもじ', '顔文字': 'かおもじ',
+  '略す': 'りゃくす', '略して': 'りゃくして',
+  '上手': 'じょうず', '下手': 'へた', '苦手': 'にがて',
+  '得意': 'とくい', '簡単': 'かんたん', '複雑': 'ふくざつ',
+  '特別': 'とくべつ', '普通': 'ふつう',
+  '本当': 'ほんとう', '確か': 'たしか',
+  '多分': 'たぶん', '恐らく': 'おそらく',
+  '是非': 'ぜひ', '必ず': 'かならず',
+  '絶対': 'ぜったい', '多分': 'たぶん',
+  '一緒': 'いっしょ', '全部': 'ぜんぶ',
+  '沢山': 'たくさん', '色々': 'いろいろ',
+  '色々な': 'いろいろな', '様々': 'さまざま',
+  '自分': 'じぶん', '相手': 'あいて',
+  '奴': 'やつ', '奴ら': 'やつら',
+  '奴等': 'やつら', '連中': 'れんちゅう',
+  '友人': 'ゆうじん', '知人': 'ちじん',
+  '同僚': 'どうりょう', '上司': 'じょうし',
+  '部下': 'ぶか', '先輩': 'せんぱい',
+  '後輩': 'こうはい', '先生': 'せんせい',
+  '無理': 'むり', '無料': 'むりょう',
+  '有料': 'ゆうりょう', '割引': 'わりびき',
+  '特売': 'とくばい', '通常': 'つうじょう',
+  '特別': 'とくべつ', '専用': 'せんよう',
+  '共通': 'きょうつう', '一般': 'いっぱん',
+  '全体': 'ぜんたい', '部分': 'ぶぶん',
+  '全部': 'ぜんぶ', '半額': 'はんがく',
+  '無駄': 'むだ', '必要': 'ひつよう',
+  '余計': 'よけい', '無意味': 'むいみ',
+  '効果': 'こうか', '効率': 'こうりつ',
+  '能力': 'のうりょく', '実力': 'じつりょく',
+  '上達': 'じょうたつ', '進歩': 'しんぽ',
+  '成長': 'せいちょう', '発展': 'はってん',
+  '改善': 'かいぜん', '向上': 'こうじょう',
+  '低下': 'ていか', '上昇': 'じょうしょう',
+  '増加': 'ぞうか', '減少': 'げんしょう',
+  '増減': 'ぞうげん', '変動': 'へんどう',
+  '維持': 'いじ', '管理': 'かんり',
+  '運用': 'うんよう', '操作': 'そうさ',
+  '設定': 'せってい', '調整': 'ちょうせい',
+  '一方': 'いっぽう', '両方': 'りょうほう',
+  '場合': 'ばあい', '状態': 'じょうたい',
+  '状況': 'じょうきょう', '立場': 'たちば',
+  '気持': 'きもち', '気分': 'きぶん',
+  '性格': 'せいかく', '性質': 'せいしつ',
+  '特徴': 'とくちょう', '特性': 'とくせい',
+  '個性': 'こせい', '人気': 'にんき',
+  '印象': 'いんしょう', '評価': 'ひょうか',
+  '評判': 'ひょうばん', '名声': 'めいせい',
+  '分野': 'ぶんや', '領域': 'りょういき',
+  '範囲': 'はんい', '限界': 'げんかい',
+  '境目': 'さかいめ', '区分': 'くぶん',
+  '分類': 'ぶんるい', '種類': 'しゅるい',
+  '形式': 'けいしき', '書式': 'しょしき',
+  '様式': 'ようしき', '方式': 'ほうしき',
+  '型': 'かた', '形': 'かたち',
+  '模式': 'もしき', '形態': 'けいたい',
+  '文法用語': 'ぶんぽうようご', '用語': 'ようご',
+  '術語': 'じゅつご', '専門用語': 'せんもんようご',
+  '普通形': 'ふつうけい', '丁寧形': 'ていねいけい',
+  '辞書形': 'じしょけい', 'ます形': 'ますけい',
+  'て形': 'てけい', 'た形': 'たけい',
+  'ない形': 'ないけい', 'ば形': 'ばけい',
+  '意志形': 'いしけい', '命令形': 'めいれいけい',
+  '可能形': 'かのうけい', '受身形': 'うけみけい',
+  '使役形': 'しえきけい', '条件形': 'じょうけんけい',
+
+  // 日剧相关
+  '日劇': 'にちげき', '映画': 'えいが',
+  '台詞': 'せりふ', '脚本': 'きゃくほん',
+  '演技': 'えんぎ', '役者': 'やくしゃ',
+  '俳優': 'はいゆう', '女優': 'じょゆう',
+  '主人公': 'しゅじんこう', '登場人物': 'とうじょうじんぶつ',
+  '関係': 'かんけい', '繋がり': 'つながり',
+  '繋がる': 'つながる', '繋げる': 'つなげる',
+  '関わる': 'かかわる', '通じる': 'つうじる',
+
+  // 拟声拟态词
+  'ちゃんと': 'ちゃんと', 'きちんと': 'きちんと',
+  'しっかり': 'しっかり', 'はっきり': 'はっきり',
+  'ゆっくり': 'ゆっくり', 'じっくり': 'じっくり',
+  'ぐっすり': 'ぐっすり', 'ぴったり': 'ぴったり',
+  'すっきり': 'すっきり', 'さっぱり': 'さっぱり',
+  '自然': 'しぜん', '自然に': 'しぜんに',
+  '徐々に': 'じょじょに', '段々': 'だんだん',
+  '次第に': 'しだいに', '急速に': 'きゅうそくに',
+  '突然': 'とつぜん', '急に': 'きゅうに',
+  '突然に': 'とつぜんに', '偶然': 'ぐうぜん',
+  '必然': 'ひつぜん', '当然': 'とうぜん',
+  '勿論': 'もちろん', '無論': 'むろん',
+  '確実': 'かくじつ', '明確': 'めいかく',
+  '正確': 'せいかく', '精密': 'せいみつ',
+  '大体': 'だいたい', '大概': 'たいがい',
+  '大分': 'だいぶ', '大変': 'たいへん',
+  '大して': 'たいして', '大いに': 'おおいに',
+  '少々': 'しょうしょう', '僅か': 'わずか',
+  '全て': 'すべて', '凡そ': 'およそ',
+  '約': 'やく', '大体': 'だいたい',
+
+  // 清水寺 - proper noun
+  '清水寺': 'きよみずでら', '富士山': 'ふじさん',
+};
+
+// Generate sorted keys for greedy matching (longest first)
+const WORD_BANK_KEYS = Object.keys(WORD_BANK).sort((a, b) => b.length - a.length);
+
+// ============================================================
+// FURIGANA RENDERER
+// ============================================================
+/**
+ * Apply furigana (ruby annotations) to Japanese text.
+ * Wraps known kanji words in <ruby> tags: <ruby>漢字<rt>かんじ</rt></ruby>
+ * Also provides a tap-to-read feature for unknown words.
+ */
+function applyFurigana(text) {
+  if (!text || typeof text !== 'string') return text;
+  
+  // Build a regex that matches any of the word bank keys
+  // Escape special regex characters in the keys
+  const escaped = WORD_BANK_KEYS.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const pattern = new RegExp('(' + escaped.join('|') + ')', 'g');
+  
+  // Replace matches with ruby tags
+  return text.replace(pattern, (match) => {
+    const reading = WORD_BANK[match];
+    if (reading) {
+      return `<ruby>${match}<rt>${reading}</rt></ruby>`;
+    }
+    return match;
+  });
+}
+
+/**
+ * Apply furigana to all text content within a DOM element.
+ * Used for post-processing after HTML is inserted.
+ */
+function applyFuriganaToDOM(container) {
+  if (!container) return;
+  // Process all elements with class 'jp' (Japanese text spans)
+  container.querySelectorAll('.jp, .jp-example, .jp-word').forEach(el => {
+    el.innerHTML = applyFurigana(el.innerHTML);
+  });
+}
 
 // ============================================================
 // DATA: Week 2 Curriculum (条件形)
@@ -1589,8 +1846,8 @@ function appendMentorMessage(mentorId, msg, point) {
     <div class="mentor-msg">
       <div class="mini-avatar ${mentorId}">${mentorId === 'tanaka' ? '田' : mentorId === 'sato' ? '佐' : '林'}</div>
       <div class="bubble">
-        <div>${msg}</div>
-        <div style="margin-top:6px;font-size:12px;color:var(--muted);border-top:1px solid var(--rule);padding-top:6px;">💡 ${point}</div>
+        <div>${applyFurigana(msg)}</div>
+        <div style="margin-top:6px;font-size:12px;color:var(--muted);border-top:1px solid var(--rule);padding-top:6px;">💡 ${applyFurigana(point)}</div>
       </div>
     </div>`;
   chat.scrollTop = chat.scrollHeight;
@@ -1613,6 +1870,7 @@ function render() {
   const viewName = view ? view.dataset.view : 'dashboard';
   if (viewName === 'dashboard') renderDashboard();
   else if (viewName === 'progress') renderProgress();
+  else if (viewName === 'wordbank') renderWordBank();
   else renderDashboard();
 }
 
@@ -1793,28 +2051,28 @@ function renderDay(weekNum, dayNum) {
   day.content.forEach((c, i) => {
     if (c.type === 'explanation') {
       contentHtml += `<div class="content-card">
-        <h3>${c.title}</h3>
-        <p>${c.text}</p>
+        <h3>${applyFurigana(c.title)}</h3>
+        <p>${applyFurigana(c.text)}</p>
       </div>`;
     } else if (c.type === 'grammar' && c.table) {
       contentHtml += `<div class="content-card">
-        <h3>${c.title}</h3>
+        <h3>${applyFurigana(c.title)}</h3>
         <table class="grammar-table">
-          <thead><tr>${c.table.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
-          <tbody>${c.table.rows.map(r => `<tr>${r.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody>
+          <thead><tr>${c.table.headers.map(h => `<th>${applyFurigana(h)}</th>`).join('')}</tr></thead>
+          <tbody>${c.table.rows.map(r => `<tr>${r.map(cell => `<td>${applyFurigana(cell)}</td>`).join('')}</tr>`).join('')}</tbody>
         </table>
       </div>`;
     } else if (c.type === 'example' && c.examples) {
       contentHtml += `<div class="content-card">
-        <h3>${c.title}</h3>
+        <h3>${applyFurigana(c.title)}</h3>
         ${c.examples.map(e => `<div class="example">
-          <div class="jp">${e.jp}</div>
+          <div class="jp">${applyFurigana(e.jp)}</div>
           <div class="trans">${e.cn}</div>
         </div>`).join('')}
       </div>`;
     } else if (c.type === 'tip') {
       contentHtml += `<div class="content-card">
-        <div class="tip-box">${c.text}</div>
+        <div class="tip-box">${applyFurigana(c.text)}</div>
       </div>`;
     }
   });
@@ -1842,7 +2100,7 @@ function renderDay(weekNum, dayNum) {
       <div class="mentor-chat" id="mentorChat">
         <div class="mentor-msg">
           <div class="mini-avatar ${selectedId}">${selectedId === 'tanaka' ? '田' : selectedId === 'sato' ? '佐' : '林'}</div>
-          <div class="bubble">${MENTORS[selectedId].greeting}</div>
+          <div class="bubble">${applyFurigana(MENTORS[selectedId].greeting)}</div>
         </div>
       </div>
     `;
@@ -1905,7 +2163,7 @@ function renderDay(weekNum, dayNum) {
         document.getElementById('mentorChat').innerHTML = `
           <div class="mentor-msg">
             <div class="mini-avatar ${mentor.id}">${mentor.id === 'tanaka' ? '田' : mentor.id === 'sato' ? '佐' : '林'}</div>
-            <div class="bubble">${mentor.greeting}</div>
+            <div class="bubble">${applyFurigana(mentor.greeting)}</div>
           </div>`;
       });
     });
@@ -1919,9 +2177,9 @@ function renderExercise(weekNum, dayNum, ex, index) {
   if (ex.type === 'fill') {
     return `<div class="exercise-block" data-exid="${ex.id}">
       <h3>練習 ${index + 1}</h3>
-      <div class="exercise-desc">${ex.desc}</div>
+      <div class="exercise-desc">${applyFurigana(ex.desc)}</div>
       <div class="fill-group">
-        <div class="fill-label">${ex.question}</div>
+        <div class="fill-label">${applyFurigana(ex.question)}</div>
         <div class="fill-row">
           <input type="text" class="fill-input" data-answer="${ex.answer}" placeholder="输入答案" autocomplete="off">
           <button class="submit-btn" onclick="checkFill(this)">检查</button>
@@ -1932,18 +2190,18 @@ function renderExercise(weekNum, dayNum, ex, index) {
   } else if (ex.type === 'choice') {
     return `<div class="exercise-block" data-exid="${ex.id}">
       <h3>練習 ${index + 1}</h3>
-      <div class="exercise-desc">${ex.desc}</div>
-      <div class="fill-label">${ex.question}</div>
+      <div class="exercise-desc">${applyFurigana(ex.desc)}</div>
+      <div class="fill-label">${applyFurigana(ex.question)}</div>
       <div class="choice-group" data-answer="${ex.options.find(o => o.correct).text}" data-exid="${ex.id}">
-        ${ex.options.map((o, oi) => `<button class="choice-btn" data-correct="${o.correct}">${String.fromCharCode(65 + oi)}. ${o.text}</button>`).join('')}
+        ${ex.options.map((o, oi) => `<button class="choice-btn" data-correct="${o.correct}">${String.fromCharCode(65 + oi)}. ${applyFurigana(o.text)}</button>`).join('')}
       </div>
       <div class="exercise-feedback" id="fb-${ex.id}"></div>
     </div>`;
   } else if (ex.type === 'writing') {
     return `<div class="exercise-block" data-exid="${ex.id}">
       <h3>✍️ 書き練習</h3>
-      <div class="exercise-desc">${ex.desc}</div>
-      <div class="fill-label">${ex.question}</div>
+      <div class="exercise-desc">${applyFurigana(ex.desc)}</div>
+      <div class="fill-label">${applyFurigana(ex.question)}</div>
       <textarea class="writing-area" placeholder="ここに日本語で書いてください..." data-exid="${ex.id}"></textarea>
       <div class="writing-hint">至少写一个完整的句子。尽量使用本周学到的语法点。</div>
       <button class="submit-btn" onclick="submitWriting(this)">提交给导师批改</button>
@@ -1990,8 +2248,8 @@ function checkFill(btn) {
 
   fb.className = `exercise-feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
   fb.innerHTML = isCorrect
-    ? `<div class="fb-title">✅ 正解！</div><div class="fb-detail">${ex.feedback}</div>`
-    : `<div class="fb-title">❌ 不正解</div><div class="fb-detail">正解は「${ex.answer}」です。<br>${ex.feedback}</div>`;
+    ? `<div class="fb-title">✅ 正解！</div><div class="fb-detail">${applyFurigana(ex.feedback)}</div>`
+    : `<div class="fb-title">❌ 不正解</div><div class="fb-detail">正解は「${applyFurigana(ex.answer)}」です。<br>${applyFurigana(ex.feedback)}</div>`;
 
   // Mentor feedback for mentor days
   if (state.selectedMentor && (state.currentDay === 3 || state.currentDay === 6)) {
@@ -2034,8 +2292,8 @@ function checkChoice(btn) {
 
   fb.className = `exercise-feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
   fb.innerHTML = isCorrect
-    ? `<div class="fb-title">✅ 正解！</div><div class="fb-detail">${ex.feedback}</div>`
-    : `<div class="fb-title">❌ 不正解</div><div class="fb-detail">${ex.feedback}</div>`;
+    ? `<div class="fb-title">✅ 正解！</div><div class="fb-detail">${applyFurigana(ex.feedback)}</div>`
+    : `<div class="fb-title">❌ 不正解</div><div class="fb-detail">${applyFurigana(ex.feedback)}</div>`;
 
   // Mentor feedback for mentor days
   if (state.selectedMentor && (state.currentDay === 3 || state.currentDay === 6)) {
@@ -2423,6 +2681,78 @@ function renderProgress() {
     btn.addEventListener('click', () => {
       goToWeek(parseInt(btn.dataset.week));
     });
+  });
+}
+
+// ============================================================
+// WORD BANK VIEW
+// ============================================================
+const WB_STORAGE_KEY = 'nihongo_wordbank_learned';
+
+function getLearnedWords() {
+  try {
+    const data = localStorage.getItem(WB_STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch(e) { return []; }
+}
+
+function saveLearnedWords(words) {
+  localStorage.setItem(WB_STORAGE_KEY, JSON.stringify(words));
+}
+
+function toggleWordLearned(kanji) {
+  const learned = getLearnedWords();
+  const idx = learned.indexOf(kanji);
+  if (idx >= 0) learned.splice(idx, 1);
+  else learned.push(kanji);
+  saveLearnedWords(learned);
+  // Update card visual
+  const card = document.querySelector(`.wb-word-card[data-word="${kanji}"]`);
+  if (card) card.classList.toggle('learned');
+}
+
+function renderWordBank() {
+  const entries = Object.entries(WORD_BANK);
+  const total = entries.length;
+  const learned = getLearnedWords();
+
+  container.innerHTML = `
+    <div class="fade-in">
+      <div style="margin-bottom:24px;">
+        <h2 style="font-size:20px;font-weight:700;">📖 单词本</h2>
+        <p style="font-size:13px;color:var(--muted);">课程中出现的 N3+ 级别单词，点击可标记为"已掌握"</p>
+      </div>
+      <div class="wb-header">
+        <input type="text" class="wb-search" id="wbSearch" placeholder="🔍 搜索单词（汉字或读音）..." autocomplete="off">
+        <span style="font-size:13px;color:var(--muted);">掌握 ${learned.length}/${total}</span>
+      </div>
+      <div class="wb-count" id="wbCount">共 ${total} 个单词</div>
+      <div class="wb-word-grid" id="wbGrid">
+        ${entries.map(([kanji, reading]) => `
+          <div class="wb-word-card ${learned.includes(kanji) ? 'learned' : ''}" data-word="${kanji}" onclick="toggleWordLearned('${kanji.replace(/'/g, "\\'")}')">
+            <span class="wb-word-kanji">${kanji}</span>
+            <span class="wb-word-reading">${reading}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  // Search functionality
+  document.getElementById('wbSearch').addEventListener('input', function() {
+    const q = this.value.trim().toLowerCase();
+    const cards = document.querySelectorAll('.wb-word-card');
+    let count = 0;
+    cards.forEach(card => {
+      const kanji = card.dataset.word;
+      const reading = WORD_BANK[kanji] || '';
+      const match = !q || kanji.includes(q) || reading.includes(q);
+      card.style.display = match ? '' : 'none';
+      if (match) count++;
+    });
+    document.getElementById('wbCount').textContent = q
+      ? `找到 ${count} 个单词（共 ${total} 个）`
+      : `共 ${total} 个单词（已掌握 ${getLearnedWords().length} 个）`;
   });
 }
 
