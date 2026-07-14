@@ -416,6 +416,28 @@ ruby rt { font-size: 0.6em; color: var(--muted); font-weight: 400; letter-spacin
 }
 .mentor-msg.user .mini-avatar { background: var(--ink); }
 
+/* Mentor Dialogue Input */
+.mentor-dialogue-input {
+  display: flex; gap: 8px; margin-top: 12px; padding-top: 12px;
+  border-top: 1px solid var(--rule);
+}
+.mentor-dialogue-input textarea {
+  flex: 1; padding: 10px 14px; border: 2px solid var(--rule); border-radius: var(--radius-sm);
+  font-size: 14px; font-family: var(--font-jp); resize: none; min-height: 44px; max-height: 80px;
+  transition: var(--transition); line-height: 1.5;
+}
+.mentor-dialogue-input textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.mentor-dialogue-btn {
+  padding: 10px 20px; background: var(--accent); color: white; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 600; white-space: nowrap; transition: var(--transition);
+  align-self: flex-end;
+}
+.mentor-dialogue-btn:hover { background: var(--accent-hover); }
+.mentor-dialogue-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.mentor-dialogue-status {
+  font-size: 12px; color: var(--muted); text-align: center; padding: 8px 0;
+}
+
 /* ============================================
    Weekly Test
    ============================================ */
@@ -1284,6 +1306,299 @@ function getMemorySentenceForDay(weekNum, dayNum) {
 }
 
 // ============================================================
+// MENTOR DIALOGUE DATA
+// ============================================================
+/**
+ * Each day has a mentor dialogue: mentor asks → user answers → mentor responds.
+ * Three versions per day (one per mentor style).
+ * Keywords: array of expected strings in user's answer (loose matching).
+ */
+const MENTOR_DIALOGUES = {
+  // ====== Week 1 ======
+  '1-1': {
+    tanaka: {
+      question: 'よし、「〜てくれる」の練習だ。次の文を日本語に訳せ。「友達が私に花を買ってくれた」。…いや、もう日本語だな。では、自分の言葉で「〜てくれる」を使った文を作ってみせよ。',
+      keywords: ['くれる', 'てくれる'],
+      followUp: 'ふむ…「あげる」との違いは分かっているか？「くれる」は「誰かが私にしてくれる」、「あげる」は「私が誰かにしてあげる」。この違いを意識して、もう一度「あげる」を使った文を作ってみろ。',
+      followUpKeywords: ['あげる', 'てあげる']
+    },
+    sato: {
+      question: 'こんにちは！今日は「〜てくれる」を勉強したね。じゃあ、一緒に練習してみよう！「友達がしてくれたこと」を、日本語で一文作ってみて〜',
+      keywords: ['くれる', 'てくれる'],
+      followUp: 'いいね！じゃあ今度は「〜てあげる」との違いを考えてみよう。もし「私が友達にしてあげたこと」を言うとしたら、どうなる？やってみて！',
+      followUpKeywords: ['あげる', 'てあげる']
+    },
+    hayashi: {
+      question: '「〜てくれる」の核心は"受益の方向"だ。考えてみよう——君が言いたい「友達がしてくれたこと」は何だ？一文で書いてみなさい。',
+      keywords: ['くれる', 'てくれる'],
+      followUp: 'では、その文を「〜てあげる」に書き換えてみよう。主語と受益者がどう変わる？考えて書いてみなさい。',
+      followUpKeywords: ['あげる', 'てあげる']
+    }
+  },
+  '1-2': {
+    tanaka: {
+      question: '「くれる」「もらう」「あげる」——この三つの違いを、自分の言葉で説明してみろ。例文も一つずつ挙げること。',
+      keywords: ['くれる', 'もらう', 'あげる'],
+      followUp: 'お前の説明は正しい。しかし、実際の会話で一番使うのはどれだ？日劇を思い出せ——「くれる」が最も頻繁に使われる。なぜだと思う？',
+      followUpKeywords: ['くれる', '頻繁']
+    },
+    sato: {
+      question: '今日はややこしい三つの動詞を勉強したね！「くれる」「もらう」「あげる」、それぞれのイメージを一言で教えて？',
+      keywords: ['くれる', 'もらう', 'あげる'],
+      followUp: 'そうそう！じゃあ、次のシチュエーションを考えてみよう——コンビニで友達にお茶をおごってもらった時、何て言う？',
+      followUpKeywords: ['くれる', 'もらう']
+    },
+    hayashi: {
+      question: '三つの授受動詞の本質は"視点"だ。この三つを一文ずつ書いて、それぞれの視点の違いを説明してみなさい。',
+      keywords: ['くれる', 'もらう', 'あげる'],
+      followUp: 'よく考えたな。では、視点の違いを理解した上で、なぜ日本語は「くれる」を好むと思う？日本語の文化と関係がある。',
+      followUpKeywords: ['恩恵', '相手', '視点']
+    }
+  },
+  '1-3': {
+    tanaka: {
+      question: '復習だ。前の二日間で学んだことを、一つの文にまとめてみろ。「〜てくれる」と「〜ちゃった」の両方を使って、自然な日本語の文を作れ。',
+      keywords: ['てくれる', 'ちゃった'],
+      followUp: 'よし。では、その文を「〜てもらった」に書き換えてみろ。主語は変わるぞ。',
+      followUpKeywords: ['もらった', 'てもらう']
+    },
+    sato: {
+      question: '今日は復習の日だよ！前の二日間で習った「くれる」と「ちゃった」を使って、何か面白い文を作ってみて！',
+      keywords: ['くれる', 'ちゃった'],
+      followUp: 'いいね！じゃあ今度はその文の「くれる」を「もらう」に変えてみよう。文の感じがどう変わるかな？',
+      followUpKeywords: ['もらう']
+    },
+    hayashi: {
+      question: '復習だ。「くれる」と「ちゃった」——この二つを一つの文で使ってみなさい。なぜその言葉を選んだか、理由も説明すること。',
+      keywords: ['くれる', 'ちゃった'],
+      followUp: 'なるほど。では、その文を「もらう」で言い換えてみよう。視点がどう変わる？',
+      followUpKeywords: ['もらう', '視点']
+    }
+  },
+  '1-4': {
+    tanaka: {
+      question: '「〜とく」（〜ておく）の練習だ。「準備をしておく」を口語の「〜とく」に変換して、一文を作ってみろ。',
+      keywords: ['とく', 'ておく', '準備'],
+      followUp: 'よし。では「〜とく」と「〜ちゃった」の違いは分かるか？「事前にやる」と「やってしまった」の違いだ。それぞれ例文を作れ。',
+      followUpKeywords: ['とく', 'ちゃった']
+    },
+    sato: {
+      question: '「〜とく」は便利な表現だね！何か「事前にやっておくこと」を、「〜とく」を使って言ってみて〜',
+      keywords: ['とく'],
+      followUp: 'いいね！じゃあ「〜とく」と「〜ちゃった」を比べてみよう。この二つ、実は反対の意味なんだ。わかる？',
+      followUpKeywords: ['とく', 'ちゃった', '事前']
+    },
+    hayashi: {
+      question: '「〜とく」は「〜ておく」の縮約形だ。日常のどんな場面で使う？実際に使える例文を作ってみなさい。',
+      keywords: ['とく'],
+      followUp: '正しい。では「〜とく」＝準備、「〜ちゃった」＝完了・後悔。この対比を意識して、両方を使った短文を作ってみよ。',
+      followUpKeywords: ['とく', 'ちゃった']
+    }
+  },
+  '1-5': {
+    tanaka: {
+      question: '総合練習だ。これまで学んだ「〜てくれる」「〜ちゃった」「〜とく」の中から二つ以上を使って、一つの長い文を作れ。',
+      keywords: ['てくれる', 'ちゃった'],
+      followUp: 'よし。ではその文の中の「〜てくれる」を「〜てもらう」に置き換えてみろ。文法的には正しいか？意味はどう変わる？',
+      followUpKeywords: ['もらう', 'てもらう']
+    },
+    sato: {
+      question: '今日は実践練習だよ！今まで習った表現をできるだけたくさん使って、日記みたいな文を書いてみて！',
+      keywords: ['てくれる', 'ちゃった', 'とく'],
+      followUp: 'すごい！たくさん使えてるね！じゃあ、その文を日劇のセリフみたいにカジュアルな言い方に変えてみよう！',
+      followUpKeywords: ['ちゃった', 'とく']
+    },
+    hayashi: {
+      question: '今日は総合実践だ。学んだ三つの表現を組み合わせて、ある日の出来事を描写する文を作りなさい。',
+      keywords: ['てくれる', 'ちゃった'],
+      followUp: 'よくできた。では、その文の冒頭に「昨日ね」を付けて、口語らしいリズムにしてみよう。日本語はリズムも大切だ。',
+      followUpKeywords: ['昨日']
+    }
+  },
+  '1-6': {
+    tanaka: {
+      question: '今週の総仕上げだ。次の日本語を自然な口語に変換してみろ。「友達が駅まで送ってくれたんだ」→「送ってくれた」を「送ってくれたんだ」にすると、どういうニュアンスの違いがある？',
+      keywords: ['くれたんだ', 'ん', 'のだ'],
+      followUp: 'そうだ。「〜んだ」は説明・強調のニュアンスを加える。では、なぜ日劇で「〜んだ」がこんなに頻繁に出てくると思う？',
+      followUpKeywords: ['説明', '強調', '自然']
+    },
+    sato: {
+      question: '今日は日劇でよく聞く「〜んだ」について深掘りするよ！「友達がケーキを買ってくれた」と「買ってくれたんだ」、どう違うと思う？',
+      keywords: ['くれたんだ', '説明', '強調'],
+      followUp: '正解！「〜んだ」は説明や強調のニュアンスなんだ。じゃあ、今覚えたことを使って、自分で「〜んだ」付きの文を作ってみよう！',
+      followUpKeywords: ['んだ']
+    },
+    hayashi: {
+      question: '「〜んだ」の本質を考えよう。普通の文と「〜んだ」文、あなたにとってどう違う？直感でいい、教えてくれ。',
+      keywords: ['説明', '強調', 'ん'],
+      followUp: 'その通り。「〜んだ」は「説明する」ときに使う。では、この知識を使って、今週の学びを「〜んだ」でまとめてみなさい。',
+      followUpKeywords: ['説明', 'んだ']
+    }
+  },
+  '1-7': {
+    tanaka: {
+      question: 'テストの前に、一週間の総復習だ。「〜てくれる」を使って、あなたがこの一週間で「日本語の森がしてくれたこと」を一文で言ってみろ。',
+      keywords: ['てくれる', 'くれた'],
+      followUp: 'よし。では、テスト頑張れ。合格できなければ、来週もう一度最初からやり直しだ。',
+      followUpKeywords: ['頑張る', 'テスト']
+    },
+    sato: {
+      question: 'いよいよテストだ！でもその前に、一週間頑張った自分へのご褒美として、「〜てくれた」を使って、日本語の森があなたにしてくれたことを言ってみよう！',
+      keywords: ['てくれる', 'くれた'],
+      followUp: 'いいね！その気持ちが大事！さあ、テストに挑戦しよう！ファイト〜！',
+      followUpKeywords: ['テスト', '頑張る']
+    },
+    hayashi: {
+      question: 'テスト前の最後の問いかけだ。この一週間で学んだことを、自分の言葉で振り返ってみなさい。何が一番印象に残った？',
+      keywords: ['てくれる', 'ちゃった', 'とく'],
+      followUp: 'よし、その気づきを大切に。では、テストに臨め。自分の理解を確かめる場だ。',
+      followUpKeywords: ['テスト']
+    }
+  },
+  // ====== Week 2 ======
+  '2-1': {
+    tanaka: {
+      question: '「と」条件の基本だ。「春になる」＋「桜が咲く」→「春になると、桜が咲く」。では、「このボタンを押す」＋「電気がつく」を「と」でつなげてみろ。',
+      keywords: ['押すと', 'と'],
+      followUp: '正解。「と」は「必然的な結果」を示す。この感覚が大事だ。では、「と」と「たら」の違いは分かるか？',
+      followUpKeywords: ['必然', '自然']
+    },
+    sato: {
+      question: '今日は「と」の勉強だね！「春になると桜が咲く」——自然な流れを表すんだ。じゃあ、あなたの身近な「〜すると、〜になる」を教えて！',
+      keywords: ['と', 'すると'],
+      followUp: 'いいね！日常の習慣や自然な結果を言うときに「と」を使うんだ。じゃあ「もし〜たら」とはどう違うと思う？',
+      followUpKeywords: ['たら', '違い']
+    },
+    hayashi: {
+      question: '「と」は"条件→結果"の"必然性"を表す。あなたの日常生活で「〜すると、必ず〜になる」という必然の連鎖はあるか？',
+      keywords: ['と', '必ず'],
+      followUp: 'なるほど。では「と」と「たら」の違いは？「と」は結果が必然だが、「たら」は偶然や仮定の色が強い。意識して使い分けてみよう。',
+      followUpKeywords: ['たら', '必然', '仮定']
+    }
+  },
+  '2-2': {
+    tanaka: {
+      question: '「ば」形の練習だ。「安い」を「ば」形にすると「安ければ」。では「行く」を「ば」形にしてみろ。',
+      keywords: ['行けば', 'ば'],
+      followUp: '「行けば」で正解だ。「ば」は「もし〜ならば」の仮定条件だ。では「安ければ買う」——この文は「と」に置き換えられるか？',
+      followUpKeywords: ['と', '置き換え']
+    },
+    sato: {
+      question: '「ば」は仮定の条件だよ！「安ければ買う」——もし安かったら買うって意味。あなたが「安ければ買いたい」ものは何？',
+      keywords: ['ければ', 'ば'],
+      followUp: 'いいね！「ば」は話し手の意志や希望を表せるのが特徴だよ。「と」は意志表現ができないから、そこが違いなんだ！',
+      followUpKeywords: ['意志', 'と', '違い']
+    },
+    hayashi: {
+      question: '「ば」の本質は「仮定＋意志」だ。教科書的な「安ければ買う」を、あなたの実際の体験に置き換えてみなさい。',
+      keywords: ['ければ', 'ば'],
+      followUp: 'よし。「ば」は話者の意志が入る点で「と」と決定的に違う。「と」は客観的事実、「ば」は主観的判断。この違いを意識しろ。',
+      followUpKeywords: ['主観', '客観']
+    }
+  },
+  '2-3': {
+    tanaka: {
+      question: '「たら」の練習だ。「東京に行く」を「たら」形にすると？さらに「スカイツリーに登る」につなげて、一文を作れ。',
+      keywords: ['行ったら', 'たら'],
+      followUp: 'そうだ。「東京に行ったら、スカイツリーに登る」で正解。「たら」は「と」「ば」に比べて制約が少なく、最も汎用的な条件形だ。',
+      followUpKeywords: ['汎用', '便利']
+    },
+    sato: {
+      question: '「たら」は超便利！ほとんどの「もし〜」に使えるんだ。あなたが「日本に行ったら」何をしたい？教えて！',
+      keywords: ['行ったら', 'たら'],
+      followUp: 'いいね！「たら」のいいところは、ほぼ全ての条件に使えること。でも「と」や「ば」とどう違うか、わかる？',
+      followUpKeywords: ['と', 'ば', '違い']
+    },
+    hayashi: {
+      question: '「たら」は最も汎用的な条件形だ。なぜ「と」や「ば」ではなく「たら」が一番使いやすいと思う？',
+      keywords: ['たら', '便利'],
+      followUp: 'その通り。「たら」は時制や意志の制約が少ないからだ。では、同じ文を「と」「ば」「たら」の三つで書いてみて、ニュアンスの違いを感じ取れ。',
+      followUpKeywords: ['と', 'ば', 'たら', '違い']
+    }
+  },
+  '2-4': {
+    tanaka: {
+      question: '「なら」の練習だ。「日本人」＋「刺身が好き」→「日本人なら、刺身が好きな人が多い」。では「学生」を使って「なら」の文を作れ。',
+      keywords: ['なら', '学生'],
+      followUp: '正解。「なら」は「〜の話なら」という主題提示のニュアンスが強い。他の条件形との違いを一言で言えるか？',
+      followUpKeywords: ['主題', '話題']
+    },
+    sato: {
+      question: '「なら」は「〜の話をするなら」という感じだよ。例えば「日本に行くなら、富士山を見たい！」。あなたの場合は？「〜するなら、〜したい！」を教えて！',
+      keywords: ['なら'],
+      followUp: 'いいね！「なら」は他の条件形と違って、相手の話を受けて「その話なら…」と展開する時に使うんだ。会話でよく出てくるよ！',
+      followUpKeywords: ['話題', '会話']
+    },
+    hayashi: {
+      question: '「なら」の特徴は"主題提示"だ。他の条件形と異なり、既に出た話題を受けて「〜に関して言えば」の意味を持つ。例文を作って確認してみなさい。',
+      keywords: ['なら'],
+      followUp: 'そうだ。「なら」は「もし〜だったら」というより「〜の話なら」という意味合いが強い。この違いを意識して、会話で使ってみよう。',
+      followUpKeywords: ['話題', '主題']
+    }
+  },
+  '2-5': {
+    tanaka: {
+      question: '「雨が降る」を「たら」形にすると「降ったら」。では「雨が降ったら、試合は中止だ」——この「たら」を「と」に置き換えられるか？理由も言え。',
+      keywords: ['降ったら', 'たら', 'と'],
+      followUp: 'そうだ。「と」に置き換えると「雨が降ると、試合は中止だ」——自然現象のように聞こえる。意志的な判断には「たら」が適切だ。',
+      followUpKeywords: ['必然', '意志']
+    },
+    sato: {
+      question: '今日は実戦練習！「雨が降ったら、試合は中止」——この文を「と」と「ば」に変えてみよう。それぞれどう違うかな？',
+      keywords: ['降ったら', '降れば', '降ると'],
+      followUp: 'いいね！「降ると」→必然的、「降れば」→仮定・意志、「降ったら」→一番自然。このニュアンスの違いを感じ取れれば完璧！',
+      followUpKeywords: ['ニュアンス', '違い']
+    },
+    hayashi: {
+      question: '三つの条件形を比較しよう。「雨が降る」を「と」「ば」「たら」の三つで書き換え、それぞれの文のニュアンスの違いを説明しなさい。',
+      keywords: ['降ると', '降れば', '降ったら'],
+      followUp: 'よく考えた。「と」=客観的事実、「ば」=仮定＋意志、「たら」=最も汎用的。この三層構造を理解すれば、条件形は完璧だ。',
+      followUpKeywords: ['客観', '仮定', '汎用']
+    }
+  },
+  '2-6': {
+    tanaka: {
+      question: '「電車に乗れば、30分で着く」——この「ば」を「たら」に変えても意味は通じる。では、なぜここでは「ば」が使われている？ニュアンスの違いを説明してみろ。',
+      keywords: ['乗れば', 'ば', 'たら'],
+      followUp: 'そうだ。「ば」は「条件さえ満たせば結果が得られる」というニュアンスが強い。「電車に乗れば」→「乗るという条件さえ満たせば」という含意だ。',
+      followUpKeywords: ['条件', '結果']
+    },
+    sato: {
+      question: '「電車に乗れば、30分で着く」——この「ば」、どうして「たら」じゃなくて「ば」なんだろう？一緒に考えてみよう！',
+      keywords: ['乗れば', 'ば'],
+      followUp: 'そうそう！「ば」は「条件さえ整えば」っていう感じが強いんだ。「乗れば」→「乗ることさえすれば」ってニュアンス。細かいけど大事な違いだよ！',
+      followUpKeywords: ['条件', 'ニュアンス']
+    },
+    hayashi: {
+      question: '「電車に乗れば、30分で着く」——「ば」と「たら」の違いを、この文を例に解説しなさい。',
+      keywords: ['乗れば', 'ば', 'たら'],
+      followUp: 'その通り。「ば」は「条件充足→結果」の因果関係が強い。「たら」は単なる「時系列」に近い。この違いを意識して使い分けよう。',
+      followUpKeywords: ['因果', '時系列']
+    }
+  },
+  '2-7': {
+    tanaka: {
+      question: '最終日だ。今週学んだ「と」「ば」「たら」「なら」——四つの条件形を全て使って、一つの長い文章を作れ。テーマは「日本旅行の計画」だ。',
+      keywords: ['と', 'ば', 'たら', 'なら'],
+      followUp: 'よくできた。四つの条件形を使い分けられている。テストでは、特に「と」と「たら」の違いに注意しろ。',
+      followUpKeywords: ['テスト', '違い']
+    },
+    sato: {
+      question: 'いよいよ今週の最終日！四つの条件形「と」「ば」「たら」「なら」を全部使って、「理想の休日」について書いてみよう！',
+      keywords: ['と', 'ば', 'たら', 'なら'],
+      followUp: 'すごい！全部使えてるね！テスト前に、もう一度それぞれの特徴を復習しておこう！「と」=自然の流れ、「ば」=仮定、「たら」=万能、「なら」=話題。',
+      followUpKeywords: ['テスト', '復習']
+    },
+    hayashi: {
+      question: '最終チェックだ。「と」「ば」「たら」「なら」——この四つを一文にまとめて、それぞれの役割の違いを明確に説明しなさい。',
+      keywords: ['と', 'ば', 'たら', 'なら'],
+      followUp: '理解できている。ではテストに臨め。鍵は「と」の必然性と「たら」の汎用性の違いだ。これを意識すれば間違えない。',
+      followUpKeywords: ['テスト', '必然', '汎用']
+    }
+  }
+};
+
+// ============================================================
 // DATA: Week 2 Curriculum (条件形)
 // ============================================================
 (function populateWeek2() {
@@ -1870,6 +2185,8 @@ function getDefaultState() {
     unlockedDay: 1,
     weekComplete: false,
     selectedMentor: null,
+    // 导师对话状态: { week-day: { round: 1, userAnswer: '...', mentorResponse: '...' } }
+    mentorDialogue: {},
     // 所有学过的语法点列表（跨周）
     allGrammarPoints: [],
     // 已完成周数列表
@@ -2009,6 +2326,214 @@ function appendMentorMessage(mentorId, msg, point) {
       </div>
     </div>`;
   chat.scrollTop = chat.scrollHeight;
+}
+
+// ============================================================
+// MENTOR DIALOGUE INTERACTION
+// ============================================================
+/**
+ * Starts the mentor dialogue for a given week/day.
+ * Mentors ask a question based on the day's content.
+ */
+function startMentorDialogue(weekNum, dayNum) {
+  const key = weekNum + '-' + dayNum;
+  const dialogue = MENTOR_DIALOGUES[key];
+  if (!dialogue) return;
+  const mentorId = state.selectedMentor || 'tanaka';
+  const mentor = MENTORS[mentorId];
+  const qData = dialogue[mentorId] || dialogue['tanaka'];
+  if (!qData) return;
+
+  // Initialize dialogue state
+  if (!state.mentorDialogue) state.mentorDialogue = {};
+  state.mentorDialogue[key] = { round: 1, mentorId: mentorId, completed: false };
+  saveState();
+
+  const chat = document.getElementById('mentorChat');
+  if (!chat) return;
+
+  // Clear existing chat and show the question
+  chat.innerHTML = `
+    <div class="mentor-msg">
+      <div class="mini-avatar ${mentorId}">${mentorId === 'tanaka' ? '田' : mentorId === 'sato' ? '佐' : '林'}</div>
+      <div class="bubble">
+        <div>${applyFurigana(qData.question)}</div>
+      </div>
+    </div>
+  `;
+
+  // Show input area
+  const inputArea = document.getElementById('mentorDialogueInput');
+  if (inputArea) {
+    inputArea.style.display = 'flex';
+    inputArea.innerHTML = `
+      <textarea id="mentorAnswerInput" placeholder="日本語で答えてください..." rows="2"></textarea>
+      <button class="mentor-dialogue-btn" onclick="submitMentorAnswer(${weekNum}, ${dayNum})">回答する</button>
+    `;
+  }
+}
+
+/**
+ * Handles the user's answer to the mentor's first question.
+ */
+function submitMentorAnswer(weekNum, dayNum) {
+  const key = weekNum + '-' + dayNum;
+  const dialogue = MENTOR_DIALOGUES[key];
+  if (!dialogue) return;
+  const mentorId = state.selectedMentor || 'tanaka';
+  const qData = dialogue[mentorId] || dialogue['tanaka'];
+  if (!qData) return;
+
+  const input = document.getElementById('mentorAnswerInput');
+  if (!input) return;
+  const userAnswer = input.value.trim();
+  if (!userAnswer) {
+    input.style.borderColor = '#e74c3c';
+    input.placeholder = '答えを入力してください！';
+    setTimeout(() => { input.style.borderColor = ''; }, 1500);
+    return;
+  }
+
+  // Save user's answer
+  state.mentorDialogue[key] = { ...state.mentorDialogue[key], round: 2, userAnswer: userAnswer };
+  saveState();
+
+  // Check if the answer contains any of the expected keywords
+  const hasKeyword = qData.keywords.some(kw => userAnswer.includes(kw));
+  // Determine mentor's response based on keyword match
+  const mentor = MENTORS[mentorId];
+  let responseMsg, responsePoint;
+
+  if (hasKeyword) {
+    responseMsg = qData.followUp;
+    responsePoint = '正しい方向性だ！もう一歩深く考えてみよう。';
+  } else {
+    responseMsg = getMentorCorrection(mentorId, qData);
+    responsePoint = 'ヒント：' + qData.keywords.join('・') + ' のどれかを使ってみよう。もう一度答えてみなさい。';
+  }
+
+  const chat = document.getElementById('mentorChat');
+  if (chat) {
+    // Show user's answer
+    chat.innerHTML += `
+      <div class="mentor-msg user">
+        <div class="mini-avatar">${mentorId === 'tanaka' ? '田' : mentorId === 'sato' ? '佐' : '林'}</div>
+        <div class="bubble"><div>${applyFurigana(userAnswer)}</div></div>
+      </div>
+    `;
+    // Show mentor's response
+    chat.innerHTML += `
+      <div class="mentor-msg">
+        <div class="mini-avatar ${mentorId}">${mentorId === 'tanaka' ? '田' : mentorId === 'sato' ? '佐' : '林'}</div>
+        <div class="bubble">
+          <div>${applyFurigana(responseMsg)}</div>
+          <div style="margin-top:6px;font-size:12px;color:var(--muted);border-top:1px solid var(--rule);padding-top:6px;">💡 ${applyFurigana(responsePoint)}</div>
+        </div>
+      </div>
+    `;
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  // Update input for follow-up
+  const inputArea = document.getElementById('mentorDialogueInput');
+  if (inputArea) {
+    if (hasKeyword) {
+      // Show follow-up input
+      inputArea.innerHTML = `
+        <textarea id="mentorFollowUpInput" placeholder="もう一度答えてみよう..." rows="2"></textarea>
+        <button class="mentor-dialogue-btn" onclick="submitMentorFollowUp(${weekNum}, ${dayNum})">回答する</button>
+      `;
+    } else {
+      // Let the user try again
+      inputArea.innerHTML = `
+        <textarea id="mentorAnswerInput" placeholder="ヒントを参考にもう一度！" rows="2"></textarea>
+        <button class="mentor-dialogue-btn" onclick="submitMentorAnswer(${weekNum}, ${dayNum})">もう一度回答</button>
+      `;
+    }
+  }
+}
+
+/**
+ * Handles the user's follow-up answer to the mentor's second question.
+ */
+function submitMentorFollowUp(weekNum, dayNum) {
+  const key = weekNum + '-' + dayNum;
+  const dialogue = MENTOR_DIALOGUES[key];
+  if (!dialogue) return;
+  const mentorId = state.selectedMentor || 'tanaka';
+  const qData = dialogue[mentorId] || dialogue['tanaka'];
+  if (!qData) return;
+
+  const input = document.getElementById('mentorFollowUpInput');
+  if (!input) return;
+  const userFollowUp = input.value.trim();
+  if (!userFollowUp) {
+    input.style.borderColor = '#e74c3c';
+    input.placeholder = '頑張って書いてみよう！';
+    setTimeout(() => { input.style.borderColor = ''; }, 1500);
+    return;
+  }
+
+  // Save follow-up
+  state.mentorDialogue[key] = { ...state.mentorDialogue[key], round: 3, userFollowUp: userFollowUp, completed: true };
+  saveState();
+
+  // Check keywords
+  const hasKeyword = (qData.followUpKeywords || qData.keywords).some(kw => userFollowUp.includes(kw));
+  const mentor = MENTORS[mentorId];
+
+  // Generate final wrap-up
+  const finalMessages = {
+    tanaka: {
+      msg: 'よし。これで今日の対話は終わりだ。復習を怠るな。',
+      point: '忘れる前に、今日の内容を声に出して復習しろ。脳に刻み込め。'
+    },
+    sato: {
+      msg: 'よくできました！今日も一歩前進だね！この調子で続けていこう！',
+      point: '毎日の積み重ねが大事だよ！今日学んだことを、寝る前にもう一度思い出してみてね。'
+    },
+    hayashi: {
+      msg: '自分の言葉で考えられたことが、今日の最大の収穫だ。この習慣を続けなさい。',
+      point: '言語は「理解」より「発見」が成長を早める。これからも自分で気づくことを大切に。'
+    }
+  };
+  const finalMsg = finalMessages[mentorId] || finalMessages.tanaka;
+
+  const chat = document.getElementById('mentorChat');
+  if (chat) {
+    chat.innerHTML += `
+      <div class="mentor-msg user">
+        <div class="mini-avatar">${mentorId === 'tanaka' ? '田' : mentorId === 'sato' ? '佐' : '林'}</div>
+        <div class="bubble"><div>${applyFurigana(userFollowUp)}</div></div>
+      </div>
+      <div class="mentor-msg">
+        <div class="mini-avatar ${mentorId}">${mentorId === 'tanaka' ? '田' : mentorId === 'sato' ? '佐' : '林'}</div>
+        <div class="bubble">
+          <div>${applyFurigana(finalMsg.msg)}</div>
+          <div style="margin-top:6px;font-size:12px;color:var(--muted);border-top:1px solid var(--rule);padding-top:6px;">💡 ${applyFurigana(finalMsg.point)}</div>
+        </div>
+      </div>
+    `;
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  // Hide input area
+  const inputArea = document.getElementById('mentorDialogueInput');
+  if (inputArea) {
+    inputArea.innerHTML = `<div class="mentor-dialogue-status">✅ 今日の対話が完了しました！</div>`;
+  }
+}
+
+/**
+ * Returns a correction message when the user's answer doesn't match expected keywords.
+ */
+function getMentorCorrection(mentorId, qData) {
+  const corrections = {
+    tanaka: '違う。回答に「' + qData.keywords.join('」か「') + '」が含まれていない。もう一度考えて、正しい文法を使って書き直せ。',
+    sato: 'うーん、惜しい！「' + qData.keywords.join('」か「') + '」を使ってみてね。もう一度チャレンジ！',
+    hayashi: '考え方は悪くない。しかし、今日のポイントは「' + qData.keywords.join('」と「') + '」だ。これらを使って文を組み立て直してみなさい。',
+  };
+  return corrections[mentorId] || corrections.tanaka;
 }
 
 function getOverallMastery() {
@@ -2276,6 +2801,12 @@ function renderDay(weekNum, dayNum) {
         <div class="bubble">${applyFurigana(MENTORS[selectedId].greeting)}</div>
       </div>
     </div>
+    <div style="text-align:center;margin-top:12px;">
+      <button class="submit-btn" onclick="startMentorDialogue(${weekNum}, ${dayNum})" style="background:var(--accent2);width:100%;padding:12px;">
+        🎯 导师提问：今天学的内容，试试回答！
+      </button>
+    </div>
+    <div class="mentor-dialogue-input" id="mentorDialogueInput" style="display:none;"></div>
   `;
 
   // Completion banner
@@ -2340,6 +2871,11 @@ function renderDay(weekNum, dayNum) {
       container.querySelectorAll('.mentor-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
       state.selectedMentor = card.dataset.mentor;
+      // 切换导师时重置当天的对话状态
+      const key = weekNum + '-' + dayNum;
+      if (state.mentorDialogue && state.mentorDialogue[key]) {
+        delete state.mentorDialogue[key];
+      }
       saveState();
       const mentor = MENTORS[card.dataset.mentor];
       document.getElementById('mentorChat').innerHTML = `
@@ -2347,6 +2883,12 @@ function renderDay(weekNum, dayNum) {
           <div class="mini-avatar ${mentor.id}">${mentor.id === 'tanaka' ? '田' : mentor.id === 'sato' ? '佐' : '林'}</div>
           <div class="bubble">${applyFurigana(mentor.greeting)}</div>
         </div>`;
+      // 隐藏对话输入区
+      const inputArea = document.getElementById('mentorDialogueInput');
+      if (inputArea) {
+        inputArea.style.display = 'none';
+        inputArea.innerHTML = '';
+      }
     });
   });
 
