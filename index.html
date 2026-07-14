@@ -458,6 +458,60 @@ ruby rt { font-size: 0.6em; color: var(--muted); font-weight: 400; letter-spacin
 .completion-banner p { font-size: 14px; color: var(--ink-soft); }
 
 /* ============================================
+   Collapsible Review
+   ============================================ */
+.review-toggle {
+  display: block; width: 100%; padding: 14px 20px; background: var(--surface);
+  border: 1px solid var(--rule); border-radius: var(--radius-sm);
+  text-align: left; font-size: 14px; font-weight: 600; color: var(--ink-soft);
+  cursor: pointer; transition: var(--transition); margin-bottom: 8px;
+}
+.review-toggle:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+.review-toggle::after { content: ' ▼'; font-size: 11px; color: var(--muted); }
+.review-toggle.open::after { content: ' ▲'; }
+.review-content { display: none; }
+.review-content.open { display: block; }
+.review-content .exercise-block .fill-input { opacity: 0.6; }
+.review-content .exercise-block .choice-btn { cursor: default; }
+.review-content .exercise-block .choice-btn:hover { border-color: var(--rule); background: var(--surface); }
+.review-content .exercise-block .submit-btn { display: none; }
+
+/* ============================================
+   Memory Sentence
+   ============================================ */
+.memory-card {
+  background: linear-gradient(135deg, #FAF0E6, #FFF8F0);
+  border: 2px solid var(--gold); border-radius: var(--radius);
+  padding: 24px; margin-bottom: 20px; text-align: center;
+  box-shadow: 0 4px 16px var(--gold-glow);
+}
+.memory-card .memory-label {
+  font-size: 12px; color: var(--gold); font-weight: 600; letter-spacing: 2px;
+  margin-bottom: 12px; text-transform: uppercase;
+}
+.memory-card .memory-jp {
+  font-size: 22px; font-weight: 700; font-family: var(--font-jp);
+  line-height: 1.6; margin-bottom: 8px; color: var(--ink);
+}
+.memory-card .memory-hint {
+  font-size: 13px; color: var(--muted); cursor: pointer;
+  padding: 6px 12px; border-radius: 20px; display: inline-block;
+  transition: var(--transition);
+}
+.memory-card .memory-hint:hover { background: var(--gold-glow); color: #8B7520; }
+.memory-card .memory-trans {
+  font-size: 15px; color: var(--ink-soft); margin-top: 8px;
+  display: none; font-style: italic;
+}
+.memory-card .memory-trans.show { display: block; }
+.memory-card .memory-mnemonic {
+  margin-top: 12px; padding: 12px 16px; background: rgba(200, 168, 78, 0.1);
+  border-radius: var(--radius-sm); font-size: 14px; color: #6D4C00;
+  display: none; line-height: 1.7;
+}
+.memory-card .memory-mnemonic.show { display: block; }
+
+/* ============================================
    Animations
    ============================================ */
 @keyframes fadeIn {
@@ -1202,6 +1256,34 @@ function applyFuriganaToDOM(container) {
 }
 
 // ============================================================
+// MEMORY SENTENCE GENERATOR
+// ============================================================
+/**
+ * Returns a memory sentence for the given week and day.
+ * Each sentence includes jp (Japanese), cn (Chinese translation),
+ * and mnemonic (记忆小窍门 for fun memorization).
+ */
+function getMemorySentenceForDay(weekNum, dayNum) {
+  const sentences = {
+    '1-1': { jp: '友達が美味しいケーキを焼いてくれた。', cn: '朋友给我烤了美味的蛋糕。', mnemonic: '🍰 想象朋友端着飘着黄油香气的蛋糕走到你面前——「くれた」就是"别人为我做"的那种温暖感觉！' },
+    '1-2': { jp: '彼女に花を買ってもらった。', cn: '我让她给我买了花。', mnemonic: '🌸 日剧经典场景：男生说「彼女に花を買ってもらった」——主语是"我"，"她"帮了我。记住：もらう = 我得到，くれる = 别人给我。' },
+    '1-3': { jp: '昨日、財布を忘れちゃった！', cn: '昨天不小心忘了钱包！', mnemonic: '😱 想象你出门发现忘带钱包，一拍脑袋说「忘れちゃった！」——ちゃった = てしまった的口语版，表示"不小心做了"或"做完了"。' },
+    '1-4': { jp: '宿題をやっといたよ。', cn: '我事先做好了作业哦。', mnemonic: '📚 「やっといた」= やっておいた的口语缩约。想象你提前完成作业后轻松地说「やっといたよ！」——准备工作做完了！' },
+    '1-5': { jp: '友達が駅まで送ってくれたんだ。', cn: '朋友送我到车站了呢。', mnemonic: '🚉 「〜てくれたんだ」是日剧高频句尾，表示"其实是...（说明情况）"。想象朋友送你到车站，你感激地说这句话。' },
+    '1-6': { jp: 'コーヒーをご馳走してくれてありがとう！', cn: '谢谢你请我喝咖啡！', mnemonic: '☕ 把这句记下来，去日本旅行肯定用得上！「ご馳走してくれて」= "请我（吃/喝）"，加上ありがとう就是完美的感谢句。' },
+    '1-7': { jp: '全部覚えた！日本語の森、楽しい！', cn: '全部记住了！日语之森，真开心！', mnemonic: '🎉 第一周测试后的庆祝语！"覚えた"= 记住了，"楽しい"= 开心。你已经坚持了一周，给自己一个鼓励！' },
+    '2-1': { jp: '春になると、桜が咲く。', cn: '一到春天，樱花就开。', mnemonic: '🌸 「と」表示"一...就..."的自然规律。想象春天来了，樱花瞬间绽放的画面——这是日本最美的自然法则！' },
+    '2-2': { jp: '安ければ、買うよ。', cn: '如果便宜的话就买。', mnemonic: '🛍️ 「ば」表示假设条件。想象你在商场看到一件衣服，价格合适就买——「安ければ買う」。这是最常用的"如果...就..."。' },
+    '2-3': { jp: '東京に行ったら、スカイツリーに登りたい。', cn: '如果去了东京，想登晴空塔。', mnemonic: '🗼 「たら」最实用！相比「ば」和「と」，「たら」几乎可以用在任何假设场景。去东京旅行一定能用上这句！' },
+    '2-4': { jp: '日本人なら、刺身が好きな人が多い。', cn: '如果是日本人，喜欢吃生鱼片的人很多。', mnemonic: '🍣 「なら」表示"要是...的话"，用于接话题。想象你在讨论日本文化时说「日本人なら...」——超级自然的表达！' },
+    '2-5': { jp: '雨が降ったら、試合は中止だ。', cn: '如果下雨，比赛就取消。', mnemonic: '⚾ 日剧体育番常见台词！「降ったら」= 如果下雨，「中止」= 取消。用たら表达"如果发生了...就..."。' },
+    '2-6': { jp: '電車に乗れば、30分で着くよ。', cn: '如果坐电车，30分钟就能到哦。', mnemonic: '🚃 「乗れば」= 如果坐（电车）。「ば」形+「着く」= 表示"如果...就能..."的结果。在日本坐电车问路时超实用！' },
+    '2-7': { jp: '日本に行くなら、富士山を見たい！', cn: '如果去日本的话，想看富士山！', mnemonic: '🗻 「なら」用于接话题展开。如果别人说"我要去日本"，你就可以接「富士山を見たい！」。这是你N3路上的目标，加油！' },
+  };
+  return sentences[weekNum + '-' + dayNum] || null;
+}
+
+// ============================================================
 // DATA: Week 2 Curriculum (条件形)
 // ============================================================
 (function populateWeek2() {
@@ -1629,11 +1711,36 @@ const MENTORS = {
     greeting: 'さあ、始めよう。私のチェックは甘くないぞ。',
     correctPhrases: ['正解だ。よくできた。', 'ふむ、その通りだ。', 'いいだろう。次も頑張れ。'],
     wrongPhrases: ['違う。もう一度考え直せ。', '残念だ。どこが間違っているか、自分で考えてみろ。', 'よくある間違いだ。ここがポイントだ。'],
-    getFeedback: function(exercise, isCorrect, userAnswer) {
+    getFeedback: function(exercise, isCorrect, userAnswer, grammarStatus) {
+      // grammarStatus: { score, attempts, status: 'new'|'green'|'yellow'|'red' }
       if (isCorrect) {
+        if (grammarStatus && grammarStatus.status === 'red') {
+          return {
+            msg: '正解だ。だが、この文法はまだ苦手なようだ。もっと練習が必要だ。' + exercise.answer + '、しっかり覚えろ。',
+            point: '赤色の文法は要注意だ。教科書で復習し、例文を3回音読しろ。'
+          };
+        }
+        if (grammarStatus && grammarStatus.status === 'yellow') {
+          return {
+            msg: '正解だ。「' + exercise.answer + '」で合っている。だが、まだ不安定だ。継続が必要だ。',
+            point: '黄色は「もう一歩」。この調子で安定させろ。'
+          };
+        }
         return {
           msg: 'うん、「' + exercise.answer + '」が正解だ。この構文は確実に覚えておけ。',
           point: '正確さは重要だ。一つのミスが意味を大きく変える。'
+        };
+      }
+      if (grammarStatus && grammarStatus.status === 'green') {
+        return {
+          msg: '何？！「' + exercise.answer + '」を間違えるとは…慢心しているのではないか？気を引き締めろ。',
+          point: 'できていると思っていても、確認は怠るな。基本に戻れ。'
+        };
+      }
+      if (grammarStatus && grammarStatus.status === 'red') {
+        return {
+          msg: 'また間違えたか…「' + userAnswer + '」ではなく「' + exercise.answer + '」だ。繰り返し練習するしかない。',
+          point: 'この文法は弱点だ。集中して取り組め。ノートに10回書け。'
         };
       }
       return {
@@ -1650,13 +1757,37 @@ const MENTORS = {
     greeting: 'こんにちは！一緒に楽しく勉強しようね〜',
     correctPhrases: ['すごい！正解だよ〜', 'いいね！その調子！', '完璧！よくできました！'],
     wrongPhrases: ['惜しい！もう少しだよ〜', 'あら、違うみたい。ヒントいる？', '大丈夫！間違えるのは当たり前だよ〜'],
-    getFeedback: function(exercise, isCorrect, userAnswer) {
+    getFeedback: function(exercise, isCorrect, userAnswer, grammarStatus) {
       if (isCorrect) {
+        if (grammarStatus && grammarStatus.status === 'red') {
+          return {
+            msg: 'やった！正解だよ〜「' + exercise.answer + '」で合ってる！苦手なところを克服できてすごいね！',
+            point: '苦手な文法ほど、できたときの喜びが大きい！今日はこの調子で頑張ろう！'
+          };
+        }
         return {
           msg: 'やった！正解だよ〜「' + exercise.answer + '」で合ってる！',
           point: 'この調子でどんどん覚えちゃおう！'
         };
       }
+      if (grammarStatus && grammarStatus.status === 'green') {
+        return {
+          msg: 'えっ、ここ間違えちゃった？「' + exercise.answer + '」が正しいよ。たまにはこういうこともあるよね、気にしないで！',
+          point: 'ちゃんとできてるから大丈夫！もう一度確認してみよう。'
+        };
+      }
+      if (grammarStatus && grammarStatus.status === 'red') {
+        return {
+          msg: 'うーん、この文法はちょっと難しいよね。「' + userAnswer + '」じゃなくて「' + exercise.answer + '」だよ。一緒に覚えていこう！',
+          point: '苦手なところはゆっくりでいいよ。何度も見れば自然に覚えられるからね！'
+        };
+      }
+      // 联想记忆 - 关联已学过的语法点
+      const memoryHints = [
+        'この「' + exercise.answer + '」は、前に習った◯◯に似てると思わない？',
+        '「' + exercise.answer + '」のリズムで覚えちゃおう！',
+        '「' + exercise.answer + '」って言うとき、日劇のあのシーンを思い出してみて！'
+      ];
       return {
         msg: 'うーん、ちょっと違うかな〜「' + userAnswer + '」じゃなくて「' + exercise.answer + '」が正しいよ。',
         point: (exercise.feedback || '大丈夫！次はできるよ〜').replace(/<strong>|<\/strong>|。/g, m => m === '。' ? '。' : '') + '！'
@@ -1671,11 +1802,23 @@ const MENTORS = {
     greeting: '私は答えを教えない。一緒に考えよう。',
     correctPhrases: ['その通り。よく気づいたね。', '正解。なぜそれが正しいか説明できる？', 'いい答えだ。理由も言える？'],
     wrongPhrases: ['違うね。もう一度考えてみよう。', '惜しい。どこが違うと思う？', 'よくある間違いだ。何が違うか考えてみて。'],
-    getFeedback: function(exercise, isCorrect, userAnswer) {
+    getFeedback: function(exercise, isCorrect, userAnswer, grammarStatus) {
       if (isCorrect) {
+        if (grammarStatus && grammarStatus.status === 'red') {
+          return {
+            msg: '正解だ。苦手意識があった分野だが、やればできる。なぜ「' + exercise.answer + '」が正しいのか、自分の言葉で説明してみよう。',
+            point: '説明できる = 理解できた証拠だ。この調子で他の問題も解いてみよう。'
+          };
+        }
         return {
           msg: '正解だ。では、なぜ「' + exercise.answer + '」が正しいのか、自分の言葉で説明してみよう。',
           point: '説明できることが、本当の理解だ。'
+        };
+      }
+      if (grammarStatus && grammarStatus.status === 'red') {
+        return {
+          msg: '違う。この文法は苦手なようだ。一歩戻って——この文の構造を分解してみよう。主語は何だ？述語は？',
+          point: '焦らずに。ヒント：「' + exercise.answer + '」の部分を考える前に、文全体の意味を把握しよう。'
         };
       }
       return {
@@ -1786,8 +1929,23 @@ function takeWeeklySnapshots() {
 let state = loadState();
 
 function saveState() {
-  state.lastActive = new Date().toISOString();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+// 连续打卡更新：每天只记录一次
+function updateStreakOnDayComplete() {
+  if (!state.lastActive) {
+    state.streak = 1;
+  } else {
+    const last = new Date(state.lastActive);
+    const today = new Date();
+    const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+    if (diffDays === 1) state.streak++;
+    else if (diffDays > 1) state.streak = 0;
+    // diffDays === 0 表示今天已记录过，不重复增加
+  }
+  state.lastActive = new Date().toISOString();
+  saveState();
 }
 
 function getDayKey(week, day) { return week + '-' + day; }
@@ -2048,6 +2206,22 @@ function renderDay(weekNum, dayNum) {
 
   // Build content
   let contentHtml = '';
+
+  // Memory sentence (每日背诵)
+   var memorySentence = getMemorySentenceForDay(weekNum, dayNum);
+   if (memorySentence) {
+     contentHtml += `<div class="memory-card">
+       <div class="memory-label">📖 今日の暗唱</div>
+       <div class="memory-jp">${applyFurigana(memorySentence.jp)}</div>
+       <div class="memory-hint" onclick="this.nextElementSibling.classList.toggle('show');this.style.display='none';">👆 点击查看翻译</div>
+       <div class="memory-trans">${memorySentence.cn}</div>
+       <div class="memory-mnemonic" id="mnemonic-${weekNum}-${dayNum}">
+         <strong>💡 记忆小窍门</strong><br>
+         ${memorySentence.mnemonic}
+       </div>
+     </div>`;
+   }
+
   day.content.forEach((c, i) => {
     if (c.type === 'explanation') {
       contentHtml += `<div class="content-card">
@@ -2083,28 +2257,26 @@ function renderDay(weekNum, dayNum) {
     exercisesHtml += renderExercise(weekNum, dayNum, ex, i);
   });
 
-  // Mentor selector for day 3 (review) and day 6 (mentor day)
+  // Mentor selector (所有天都显示，选择导师后练习自动获得反馈)
   let mentorSection = '';
-  if (dayNum === 3 || dayNum === 6) {
-    const selectedId = state.selectedMentor || 'tanaka';
-    mentorSection = `
-      <div class="mentor-selector">
-        ${Object.values(MENTORS).map(m => `
-          <div class="mentor-card ${m.id === selectedId ? 'selected' : ''}" data-mentor="${m.id}">
-            <div class="mentor-avatar ${m.id}">${m.id === 'tanaka' ? '田' : m.id === 'sato' ? '佐' : '林'}</div>
-            <div class="mentor-name">${m.name}</div>
-            <div class="mentor-style">${m.title}</div>
-          </div>
-        `).join('')}
-      </div>
-      <div class="mentor-chat" id="mentorChat">
-        <div class="mentor-msg">
-          <div class="mini-avatar ${selectedId}">${selectedId === 'tanaka' ? '田' : selectedId === 'sato' ? '佐' : '林'}</div>
-          <div class="bubble">${applyFurigana(MENTORS[selectedId].greeting)}</div>
+  const selectedId = state.selectedMentor || 'tanaka';
+  mentorSection = `
+    <div class="mentor-selector">
+      ${Object.values(MENTORS).map(m => `
+        <div class="mentor-card ${m.id === selectedId ? 'selected' : ''}" data-mentor="${m.id}">
+          <div class="mentor-avatar ${m.id}">${m.id === 'tanaka' ? '田' : m.id === 'sato' ? '佐' : '林'}</div>
+          <div class="mentor-name">${m.name}</div>
+          <div class="mentor-style">${m.title}</div>
         </div>
+      `).join('')}
+    </div>
+    <div class="mentor-chat" id="mentorChat">
+      <div class="mentor-msg">
+        <div class="mini-avatar ${selectedId}">${selectedId === 'tanaka' ? '田' : selectedId === 'sato' ? '佐' : '林'}</div>
+        <div class="bubble">${applyFurigana(MENTORS[selectedId].greeting)}</div>
       </div>
-    `;
-  }
+    </div>
+  `;
 
   // Completion banner
   let completionHtml = '';
@@ -2143,6 +2315,17 @@ function renderDay(weekNum, dayNum) {
       ${isComplete && !isLastDay ? `<div style="text-align:center;margin-top:20px">
         <button class="submit-btn" onclick="goToNextDay()">进入 Day ${dayNum + 1} →</button>
       </div>` : ''}
+
+      ${isComplete ? `
+        <button class="review-toggle" onclick="this.classList.toggle('open');document.getElementById('reviewContent').classList.toggle('open');">
+          📖 回顾本日内容
+        </button>
+        <div class="review-content" id="reviewContent">
+          ${contentHtml}
+          ${mentorSection}
+          <div class="review-exercises">${exercisesHtml}</div>
+        </div>
+      ` : ''}
     </div>
   `;
 
@@ -2151,23 +2334,21 @@ function renderDay(weekNum, dayNum) {
     document.querySelector('[data-view="dashboard"]').click();
   });
 
-  // Bind mentor selector
-  if (dayNum === 3 || dayNum === 6) {
-    container.querySelectorAll('.mentor-card').forEach(card => {
-      card.addEventListener('click', () => {
-        container.querySelectorAll('.mentor-card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        state.selectedMentor = card.dataset.mentor;
-        saveState();
-        const mentor = MENTORS[card.dataset.mentor];
-        document.getElementById('mentorChat').innerHTML = `
-          <div class="mentor-msg">
-            <div class="mini-avatar ${mentor.id}">${mentor.id === 'tanaka' ? '田' : mentor.id === 'sato' ? '佐' : '林'}</div>
-            <div class="bubble">${applyFurigana(mentor.greeting)}</div>
-          </div>`;
-      });
+  // Bind mentor selector (所有天都生效)
+  container.querySelectorAll('.mentor-card').forEach(card => {
+    card.addEventListener('click', () => {
+      container.querySelectorAll('.mentor-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      state.selectedMentor = card.dataset.mentor;
+      saveState();
+      const mentor = MENTORS[card.dataset.mentor];
+      document.getElementById('mentorChat').innerHTML = `
+        <div class="mentor-msg">
+          <div class="mini-avatar ${mentor.id}">${mentor.id === 'tanaka' ? '田' : mentor.id === 'sato' ? '佐' : '林'}</div>
+          <div class="bubble">${applyFurigana(mentor.greeting)}</div>
+        </div>`;
     });
-  }
+  });
 
   // Bind exercise listeners
   bindExerciseListeners(weekNum, dayNum, day.exercises);
@@ -2251,11 +2432,12 @@ function checkFill(btn) {
     ? `<div class="fb-title">✅ 正解！</div><div class="fb-detail">${applyFurigana(ex.feedback)}</div>`
     : `<div class="fb-title">❌ 不正解</div><div class="fb-detail">正解は「${applyFurigana(ex.answer)}」です。<br>${applyFurigana(ex.feedback)}</div>`;
 
-  // Mentor feedback for mentor days
-  if (state.selectedMentor && (state.currentDay === 3 || state.currentDay === 6)) {
+  // 导师反馈（选择导师后所有天都生效）
+  const grammarStatus = grammarName ? state.grammarMastery[grammarName] : null;
+  if (state.selectedMentor) {
     const mentor = MENTORS[state.selectedMentor];
     if (mentor) {
-      const fbData = mentor.getFeedback(ex, isCorrect, userVal);
+      const fbData = mentor.getFeedback(ex, isCorrect, userVal, grammarStatus);
       appendMentorMessage(state.selectedMentor, fbData.msg, fbData.point);
     }
   }
@@ -2295,15 +2477,16 @@ function checkChoice(btn) {
     ? `<div class="fb-title">✅ 正解！</div><div class="fb-detail">${applyFurigana(ex.feedback)}</div>`
     : `<div class="fb-title">❌ 不正解</div><div class="fb-detail">${applyFurigana(ex.feedback)}</div>`;
 
-  // Mentor feedback for mentor days
-  if (state.selectedMentor && (state.currentDay === 3 || state.currentDay === 6)) {
+  // 导师反馈（选择导师后所有天都生效）
+  const grammarStatus = grammarName ? state.grammarMastery[grammarName] : null;
+  if (state.selectedMentor) {
     const mentor = MENTORS[state.selectedMentor];
     if (mentor) {
       const correctText = ex.options.find(o => o.correct).text;
       const userChoice = btn.textContent.replace(/^[A-Z]\.\s*/, '');
       // Create a fake exercise object with answer for mentor feedback
       const exForMentor = Object.assign({}, ex, { answer: correctText });
-      const fbData = mentor.getFeedback(exForMentor, isCorrect, userChoice);
+      const fbData = mentor.getFeedback(exForMentor, isCorrect, userChoice, grammarStatus);
       appendMentorMessage(state.selectedMentor, fbData.msg, fbData.point);
     }
   }
@@ -2394,9 +2577,15 @@ function checkDayComplete(weekNum, dayNum) {
 
   if (allDone && totalEx > 0) {
     const key = getDayKey(weekNum, dayNum);
+    const isFirstCompletion = !state.dailyComplete[key];
     state.dailyComplete[key] = true;
     state.dailyScores[key] = { correct: correctEx, total: totalEx };
-    saveState();
+    // 首次完成当天任务时更新连续打卡
+    if (isFirstCompletion) {
+      updateStreakOnDayComplete();
+    } else {
+      saveState();
+    }
 
     // Show completion message
     const header = document.querySelector('.day-header-info p');
@@ -2770,18 +2959,8 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
 // ============================================================
 // INIT
 // ============================================================
-// Check streak
-if (state.lastActive) {
-  const last = new Date(state.lastActive);
-  const today = new Date();
-  const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
-  if (diffDays === 1) state.streak++;
-  else if (diffDays > 1) state.streak = 0;
-} else {
-  state.streak = 1;
-}
-saveState();
-
+// 首次加载时，检查是否需要有连续打卡更新
+// （如果用户今天已经完成过学习，会在 checkDayComplete 中处理）
 render();
 </script>
 </body>
