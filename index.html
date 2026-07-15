@@ -2172,17 +2172,10 @@ function loadState() {
 
 function getDefaultState() {
   const state = {
-    currentWeek: 1,
-    currentDay: 1,
-    dailyComplete: {},
-    dailyScores: {},
-    exerciseResults: {},
-    grammarMastery: {},
-    streak: 0,
-    lastActive: null,
-    totalExercises: 0,
-    totalCorrect: 0,
-    unlockedDay: 1,
+        currentWeek: 1, currentDay: 1,
+        dailyComplete: {}, dailyScores: {}, exerciseResults: {},
+        grammarMastery: {},
+        totalExercises: 0, totalCorrect: 0, unlockedDay: 1,
     weekComplete: false,
     selectedMentor: null,
     // 导师对话状态: { week-day: { round: 1, userAnswer: '...', mentorResponse: '...' } }
@@ -2247,22 +2240,6 @@ let state = loadState();
 
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-// 连续打卡更新：每天只记录一次
-function updateStreakOnDayComplete() {
-  if (!state.lastActive) {
-    state.streak = 1;
-  } else {
-    const last = new Date(state.lastActive);
-    const today = new Date();
-    const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
-    if (diffDays === 1) state.streak++;
-    else if (diffDays > 1) state.streak = 0;
-    // diffDays === 0 表示今天已记录过，不重复增加
-  }
-  state.lastActive = new Date().toISOString();
-  saveState();
 }
 
 function getDayKey(week, day) { return week + '-' + day; }
@@ -2641,7 +2618,7 @@ function renderDashboard() {
   container.innerHTML = `
     <div class="fade-in">
       <div class="dashboard-hero">
-        <h1>🌲 おかえりなさい <span>${state.streak > 0 ? '🔥' : ''}</span></h1>
+        <h1>🌲 おかえりなさい</h1>
         <p style="font-size:14px;color:var(--ink-soft);">${week.title}：${week.subtitle}</p>
       </div>
 
@@ -2659,10 +2636,6 @@ function renderDashboard() {
         <div class="stat-card">
           <div class="stat-num">${state.totalExercises}</div>
           <div class="stat-label">练习总数</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num">${state.streak}</div>
-          <div class="stat-label">连续天数🔥</div>
         </div>
       </div>
 
@@ -3119,15 +3092,9 @@ function checkDayComplete(weekNum, dayNum) {
 
   if (allDone && totalEx > 0) {
     const key = getDayKey(weekNum, dayNum);
-    const isFirstCompletion = !state.dailyComplete[key];
     state.dailyComplete[key] = true;
     state.dailyScores[key] = { correct: correctEx, total: totalEx };
-    // 首次完成当天任务时更新连续打卡
-    if (isFirstCompletion) {
-      updateStreakOnDayComplete();
-    } else {
-      saveState();
-    }
+    saveState();
 
     // Show completion message
     const header = document.querySelector('.day-header-info p');
@@ -3501,8 +3468,6 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
 // ============================================================
 // INIT
 // ============================================================
-// 首次加载时，检查是否需要有连续打卡更新
-// （如果用户今天已经完成过学习，会在 checkDayComplete 中处理）
 render();
 </script>
 </body>
