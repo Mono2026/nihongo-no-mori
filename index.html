@@ -3194,19 +3194,170 @@ function goToNextDay() {
 // ============================================================
 // WEEK PROGRESSION
 // ============================================================
+
+/**
+ * Auto-generate default week data for any week defined in CURRICULUM
+ * but not yet populated in WEEK_DATA.
+ */
+function generateDefaultWeekData(weekNum) {
+  const curriculum = CURRICULUM.find(c => c.week === weekNum);
+  if (!curriculum) return null;
+
+  var gps = curriculum.grammarPoints;
+  var days = [];
+
+  // Helper: create a basic exercise for a grammar point
+  function makeEx(gp, type, idx) {
+    if (type === 'fill') {
+      var id = 'gen-w' + weekNum + '-d' + (idx + 1) + '-ex' + (days.length + 1);
+      return { id: id, type: 'fill', desc: '用「' + gp + '」完成句子', question: '请填入正确的「' + gp + '」形式：', answer: gp, feedback: '「' + gp + '」是今天的关键语法点。' };
+    }
+    if (type === 'choice') {
+      var id = 'gen-w' + weekNum + '-d' + (idx + 1) + '-ex' + (days.length + 2);
+      var options = [
+        { text: gp + '（正确用法）', correct: true },
+        { text: gp + '（否）', correct: false },
+        { text: '（错误形式）', correct: false }
+      ];
+      return { id: id, type: 'choice', desc: '以下哪个是正确的「' + gp + '」用法？', question: '选择正确的选项：', options: options, feedback: '「' + gp + '」是今天学习的语法要点。' };
+    }
+    return null;
+  }
+
+  // Helper: create explanation + table + examples for a grammar point
+  function makeContent(gp, idx) {
+    return [
+      { type: 'explanation', title: '「' + gp + '」的核心用法',
+        text: '「' + gp + '」是第' + weekNum + '周的重要语法点。掌握它对于理解日常会话和日剧非常有帮助。下面我们来详细学习它的结构和用法。' },
+      { type: 'grammar', title: '结构',
+        table: {
+          headers: ['结构', '含义', '例句'],
+          rows: [
+            ['「' + gp + '」的基本形', '基本用法', gp + 'の例文です。'],
+            ['「' + gp + '」の応用', '应用用法', gp + 'の応用です。'],
+            ['「' + gp + '」の注意点', '注意事项', gp + 'の注意点です。'],
+          ]
+        }
+      },
+      { type: 'example', title: '例句',
+        examples: [
+          { jp: gp + 'を使った例文です。', cn: '这是使用「' + gp + '」的例句。' },
+          { jp: 'もう一度' + gp + 'を練習しましょう。', cn: '再练习一次「' + gp + '」吧。' },
+        ]
+      },
+    ];
+  }
+
+  // Generate days based on grammar points
+  for (var i = 0; i < 7; i++) {
+    var dayNum = i + 1;
+    var day = { title: '', type: '', content: [], exercises: [] };
+
+    if (dayNum === 1 && gps.length >= 1) {
+      day.title = '「' + gps[0] + '」—— 基础用法';
+      day.type = '学习';
+      day.content = makeContent(gps[0], 0);
+      day.exercises = [makeEx(gps[0], 'fill', 0), makeEx(gps[0], 'choice', 0)].filter(Boolean);
+    }
+    else if (dayNum === 2 && gps.length >= 2) {
+      day.title = '「' + gps[1] + '」—— 深入理解';
+      day.type = '学习';
+      day.content = makeContent(gps[1], 1);
+      day.exercises = [makeEx(gps[1], 'fill', 1), makeEx(gps[1], 'choice', 1)].filter(Boolean);
+    }
+    else if (dayNum === 3) {
+      day.title = '复习：' + (gps.length >= 2 ? gps[0] + ' & ' + gps[1] : gps[0]);
+      day.type = '复习';
+      day.content = [
+        { type: 'explanation', title: '复习与巩固',
+          text: '今天复习前两天学过的内容。导师会帮助你检查掌握情况。' },
+        { type: 'tip', text: '复习时注意比较不同语法点的区别，混淆的地方重点标记。' },
+      ];
+      for (var j = 0; j < Math.min(2, gps.length); j++) {
+        day.exercises.push(makeEx(gps[j], 'fill', j));
+        day.exercises.push(makeEx(gps[j], 'choice', j));
+      }
+    }
+    else if (dayNum === 4 && gps.length >= 3) {
+      day.title = '「' + gps[2] + '」—— 应用练习';
+      day.type = '学习';
+      day.content = makeContent(gps[2], 2);
+      day.exercises = [makeEx(gps[2], 'fill', 2), makeEx(gps[2], 'choice', 2)].filter(Boolean);
+    }
+    else if (dayNum === 5 && gps.length >= 4) {
+      day.title = '「' + gps[3] + '」—— 综合运用';
+      day.type = '学习';
+      day.content = makeContent(gps[3], 3);
+      day.exercises = [makeEx(gps[3], 'fill', 3), makeEx(gps[3], 'choice', 3)].filter(Boolean);
+    }
+    else if (dayNum === 6) {
+      day.title = '实战对话';
+      day.type = '对话';
+      day.content = [
+        { type: 'explanation', title: '实战练习',
+          text: '今天和导师进行对话练习，运用本周学到的所有语法点。' },
+        { type: 'example', title: '参考对话',
+          examples: [
+            { jp: 'A: 今週の' + gps[0] + 'を復習しましたか？', cn: 'A: 你复习了这周的' + gps[0] + '吗？' },
+            { jp: 'B: はい、' + (gps.length > 1 ? gps[1] + 'も' : '') + '練習しました。', cn: 'B: 是的，也练习了' + (gps.length > 1 ? gps[1] : '') + '。' },
+          ]
+        },
+      ];
+      for (var k = 0; k < Math.min(2, gps.length); k++) {
+        day.exercises.push(makeEx(gps[k], 'choice', k));
+      }
+    }
+    else if (dayNum === 7) {
+      day.title = '第' + weekNum + '周测试';
+      day.type = '测试';
+      day.content = [
+        { type: 'explanation', title: '本周测试',
+          text: '完成以下题目，测试你对本周语法点的掌握情况。' },
+      ];
+      for (var m = 0; m < gps.length; m++) {
+        day.exercises.push(makeEx(gps[m], 'fill', m));
+        day.exercises.push(makeEx(gps[m], 'choice', m));
+      }
+    }
+    else {
+      // Fallback for any missing days
+      day.title = '练习日';
+      day.type = '练习';
+      day.content = [
+        { type: 'explanation', title: '综合练习',
+          text: '今天继续练习本周围绕的语法点。' },
+      ];
+      for (var n = 0; n < Math.min(2, gps.length); n++) {
+        day.exercises.push(makeEx(gps[n], 'choice', n));
+      }
+    }
+
+    days.push(day);
+  }
+
+  return {
+    title: curriculum.title,
+    subtitle: curriculum.subtitle,
+    grammarPoints: gps,
+    days: days
+  };
+}
+
 function goToNextWeek() {
-  const nextWeek = state.currentWeek + 1;
-  const curriculum = CURRICULUM.find(c => c.week === nextWeek);
+  var nextWeek = state.currentWeek + 1;
+  var curriculum = CURRICULUM.find(function(c) { return c.week === nextWeek; });
   if (!curriculum) {
     alert('🎉 恭喜你完成了全部 ' + state.currentWeek + ' 周的课程！更多内容开发中。');
     render();
     return;
   }
 
-  // Ensure WEEK_DATA for this week exists (generate if not)
+  // Auto-generate week data if not yet created
   if (!WEEK_DATA[nextWeek] && curriculum) {
-    alert('⚠️ 第' + nextWeek + '周课程正在准备中，请先完成当前周的复习。');
-    return;
+    var generated = generateDefaultWeekData(nextWeek);
+    if (generated) {
+      WEEK_DATA[nextWeek] = generated;
+    }
   }
 
   // Take snapshot of current week before moving on
