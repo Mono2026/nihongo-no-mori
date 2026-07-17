@@ -2535,6 +2535,11 @@ function render() {
 }
 
 function renderDashboard() {
+  // Auto-generate week data if missing (e.g. after page refresh)
+  if (!WEEK_DATA[state.currentWeek]) {
+    var gen = generateDefaultWeekData(state.currentWeek);
+    if (gen) WEEK_DATA[state.currentWeek] = gen;
+  }
   const week = WEEK_DATA[state.currentWeek];
   if (!week) {
     container.innerHTML = '<div class="fade-in" style="text-align:center;padding:60px 20px;"><h2>🎉 全部课程已完成！</h2><p style="margin-top:12px;color:var(--muted);">更多内容即将上线。</p></div>';
@@ -3357,6 +3362,9 @@ function goToNextWeek() {
     var generated = generateDefaultWeekData(nextWeek);
     if (generated) {
       WEEK_DATA[nextWeek] = generated;
+    } else {
+      alert('⚠️ 第' + nextWeek + '周课程数据生成失败，请重试。');
+      return;
     }
   }
 
@@ -3426,6 +3434,11 @@ function bindExerciseListeners(weekNum, dayNum, exercises) {
 // PROGRESS VIEW
 // ============================================================
 function renderProgress() {
+  // Auto-generate week data if missing (e.g. after page refresh)
+  if (!WEEK_DATA[state.currentWeek]) {
+    var gen = generateDefaultWeekData(state.currentWeek);
+    if (gen) WEEK_DATA[state.currentWeek] = gen;
+  }
   const week = WEEK_DATA[state.currentWeek];
   if (!week) {
     container.innerHTML = '<div class="fade-in" style="text-align:center;padding:60px 20px;"><h2>🎉 全部课程已完成！</h2></div>';
