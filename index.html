@@ -613,6 +613,7 @@ ruby rt { font-size: 0.6em; color: var(--muted); font-weight: 400; letter-spacin
         <button class="nav-btn active" data-view="dashboard">主页</button>
         <button class="nav-btn" data-view="progress">进度</button>
         <button class="nav-btn" data-view="wordbank">单词</button>
+        <button class="nav-btn" onclick="showDiagnostic()" style="font-size:11px;padding:6px 8px;color:var(--muted);">🔧</button>
       </nav>
     </div>
   </header>
@@ -2521,6 +2522,59 @@ function getOverallMastery() {
 }
 
 // ============================================================
+// GLOBAL ERROR HANDLER
+// ============================================================
+var lastPageErrors = [];
+window.onerror = function(msg, url, line, col, err) {
+  lastPageErrors.push(msg + ' (line ' + line + ')');
+  return false;
+};
+window.addEventListener('unhandledrejection', function(e) {
+  lastPageErrors.push('Promise: ' + e.reason);
+});
+
+// ============================================================
+// DIAGNOSTIC PANEL
+// ============================================================
+function showDiagnostic() {
+  var info = '=== 诊断信息 ===\n';
+  info += 'state.currentWeek: ' + state.currentWeek + '\n';
+  info += 'state.currentDay: ' + state.currentDay + '\n';
+  info += 'WEEK_DATA[3] exists: ' + (!!WEEK_DATA[3]) + '\n';
+  if (WEEK_DATA[3]) {
+    info += 'WEEK_DATA[3].days: ' + WEEK_DATA[3].days.length + '\n';
+    WEEK_DATA[3].days.forEach(function(d, i) {
+      info += '  Day ' + (i+1) + ': exercises=' + (d.exercises ? d.exercises.length : 0) + ', type=' + d.type + ', complete=' + isDayComplete(3, i+1) + '\n';
+    });
+  }
+  info += 'dailyComplete keys: ' + Object.keys(state.dailyComplete).join(', ') + '\n';
+  info += 'completedWeeks: ' + JSON.stringify(state.completedWeeks) + '\n';
+  info += 'lastPageErrors: ' + (lastPageErrors.length ? lastPageErrors.join(' | ') : '无') + '\n';
+  info += '\n=== 修复选项 ===\n';
+  info += '如需重置第三周，请点击下方按钮。';
+  alert(info);
+}
+
+function resetWeek3State() {
+  if (!confirm('确定要重置第三周状态吗？将清除第三周所有已完成的标记。')) return;
+  // Clear dailyComplete for week 3
+  for (var key in state.dailyComplete) {
+    if (key.startsWith('3-')) delete state.dailyComplete[key];
+  }
+  state.currentWeek = 3;
+  state.currentDay = 1;
+  state.unlockedDay = 1;
+  state.weekComplete = false;
+  if (!WEEK_DATA[3]) {
+    var gen = generateDefaultWeekData(3);
+    if (gen) WEEK_DATA[3] = gen;
+  }
+  saveState();
+  render();
+  alert('✅ 第三周状态已重置！请重新点击 Day 1 进入学习。');
+}
+
+// ============================================================
 // RENDERER
 // ============================================================
 const container = document.getElementById('viewContainer');
@@ -2629,6 +2683,10 @@ function renderDashboard() {
 
       ${weekNav}
 
+      <div style="text-align:center;margin-bottom:12px;">
+        <button onclick="resetWeek3State()" style="font-size:11px;padding:4px 10px;border:1px solid var(--rule);border-radius:6px;background:var(--surface);color:var(--muted);cursor:pointer;">🔄 修复第三周</button>
+      </div>
+
       <div class="stats-bar">
         <div class="stat-card">
           <div class="stat-num">${completedDays}/${totalDays}</div>
@@ -2698,6 +2756,7 @@ function renderDashboard() {
 }
 
 function renderDay(weekNum, dayNum) {
+  try {
   const week = WEEK_DATA[weekNum];
   if (!week) { render(); return; }
   const day = week.days[dayNum - 1];
@@ -2872,6 +2931,10 @@ function renderDay(weekNum, dayNum) {
 
   // Bind exercise listeners
   bindExerciseListeners(weekNum, dayNum, day.exercises);
+  } catch(e) {
+    lastPageErrors.push('renderDay error: ' + e.message);
+    container.innerHTML = '<div class="fade-in" style="padding:40px 20px;text-align:center;"><h3>⚠️ 渲染错误</h3><p style="color:var(--accent);margin-top:12px;">' + e.message + '</p><button class="submit-btn" onclick="render()" style="margin-top:16px;">返回主页</button></div>';
+  }
 }
 
 function renderExercise(weekNum, dayNum, ex, index) {
