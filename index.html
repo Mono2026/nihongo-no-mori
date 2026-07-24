@@ -534,6 +534,333 @@ ruby rt { font-size: 0.6em; color: var(--muted); font-weight: 400; letter-spacin
 .memory-card .memory-mnemonic.show { display: block; }
 
 /* ============================================
+   Today's Task Card (New UI)
+   ============================================ */
+.today-task-card {
+  background: linear-gradient(135deg, var(--bg2), var(--surface));
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+.today-task-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.today-task-mentor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.today-task-mentor .mentor-mini-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: white;
+  font-weight: 700;
+}
+.today-task-mentor .mentor-waiting {
+  font-size: 16px;
+  color: var(--ink);
+}
+.today-task-mentor .mentor-waiting strong {
+  color: var(--accent);
+}
+.today-task-topic {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.today-task-estimate {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.today-task-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent2);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+}
+.today-task-btn:hover { background: var(--accent2-hover); transform: translateY(-2px); }
+
+/* Health Status Card */
+.health-card {
+  background: var(--bg2);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  border: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.health-icon {
+  font-size: 24px;
+}
+.health-text {
+  flex: 1;
+}
+.health-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+.health-status {
+  font-size: 15px;
+  font-weight: 600;
+}
+.health-status.green { color: var(--accent2); }
+.health-status.yellow { color: var(--gold); }
+.health-status.red { color: var(--accent); }
+.health-advice {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+
+/* Week Progress Mini */
+.week-progress-mini {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+}
+.week-progress-mini .progress-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+.week-progress-mini .progress-dots {
+  display: flex;
+  gap: 6px;
+}
+.progress-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--rule);
+}
+.progress-dot.done { background: var(--accent2); }
+.progress-dot.current { background: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+/* Streak Badge */
+.streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--gold-glow);
+  border-radius: 20px;
+  font-size: 13px;
+  color: #8B7520;
+  font-weight: 600;
+}
+
+/* Mentor Selector Page */
+.mentor-select-page {
+  text-align: center;
+}
+.mentor-select-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--ink);
+}
+.mentor-select-card {
+  background: var(--bg2);
+  border: 2px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.mentor-select-card:hover { border-color: var(--accent); box-shadow: var(--shadow-lg); }
+.mentor-select-card.selected { border-color: var(--accent2); background: var(--accent2-glow); }
+.mentor-select-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.mentor-select-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+  font-weight: 700;
+}
+.mentor-select-name {
+  font-size: 18px;
+  font-weight: 700;
+}
+.mentor-select-style {
+  font-size: 13px;
+  color: var(--muted);
+}
+.mentor-select-desc {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+.mentor-select-suit {
+  font-size: 12px;
+  color: var(--accent);
+}
+.mentor-select-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent2);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition);
+}
+.mentor-select-card:hover .mentor-select-btn { background: var(--accent2-hover); }
+
+/* Grammar Library Item */
+.grammar-lib-item {
+  background: var(--bg2);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  border: 1px solid var(--rule);
+  transition: var(--transition);
+}
+.grammar-lib-item:hover { box-shadow: var(--shadow); }
+.grammar-lib-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.grammar-lib-name {
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.grammar-lib-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.grammar-lib-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.grammar-lib-action {
+  padding: 8px 16px;
+  background: var(--accent);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+.grammar-lib-action:hover { background: var(--accent-hover); }
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg2);
+  border-top: 1px solid var(--rule);
+  padding: 8px 0;
+  z-index: 200;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+}
+.bottom-nav-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 10px;
+}
+.bottom-nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  background: none;
+}
+.bottom-nav-btn:hover { background: var(--accent-glow); color: var(--accent); }
+.bottom-nav-btn.active { color: var(--accent); background: var(--accent-glow); }
+.bottom-nav-btn .nav-icon {
+  font-size: 20px;
+}
+.bottom-nav-btn .nav-label {
+  font-weight: 500;
+}
+
+/* Achievement Badge */
+.achievement-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--gold-glow);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gold);
+}
+.achievement-preview .ach-icon {
+  font-size: 28px;
+}
+.achievement-preview .ach-text {
+  flex: 1;
+}
+.achievement-preview .ach-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6D4C00;
+}
+.achievement-preview .ach-count {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ============================================
    Animations
    ============================================ */
 @keyframes fadeIn {
@@ -599,22 +926,16 @@ ruby rt { font-size: 0.6em; color: var(--muted); font-weight: 400; letter-spacin
 <body>
 <div id="app">
 
-  <!-- ===== Header ===== -->
+  <!-- ===== Header (Simplified) ===== -->
   <header class="app-header">
     <div class="header-inner">
       <div class="logo">
         <div class="logo-icon">🌲</div>
         <div>
           <div>日本語の森</div>
-          <div class="logo-sub">Japanese Learning Forest</div>
         </div>
       </div>
-      <nav class="header-nav">
-        <button class="nav-btn active" data-view="dashboard">主页</button>
-        <button class="nav-btn" data-view="progress">进度</button>
-        <button class="nav-btn" data-view="wordbank">单词</button>
-        <button class="nav-btn" onclick="showDiagnostic()" style="font-size:11px;padding:6px 8px;color:var(--muted);">🔧</button>
-      </nav>
+      <button class="nav-btn" onclick="showDiagnostic()" style="font-size:11px;padding:6px 8px;color:var(--muted);">🔧</button>
     </div>
   </header>
 
@@ -622,6 +943,32 @@ ruby rt { font-size: 0.6em; color: var(--muted); font-weight: 400; letter-spacin
   <main class="main-content" id="viewContainer">
     <!-- Views rendered by JS -->
   </main>
+
+  <!-- ===== Bottom Navigation ===== -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <button class="bottom-nav-btn active" data-view="dashboard">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">今日任务</span>
+      </button>
+      <button class="bottom-nav-btn" data-view="mentors">
+        <span class="nav-icon">👨‍🏫</span>
+        <span class="nav-label">选择导师</span>
+      </button>
+      <button class="bottom-nav-btn" data-view="grammarlib">
+        <span class="nav-icon">📚</span>
+        <span class="nav-label">语法库</span>
+      </button>
+      <button class="bottom-nav-btn" data-view="achievements">
+        <span class="nav-icon">🏆</span>
+        <span class="nav-label">我的成就</span>
+      </button>
+      <button class="bottom-nav-btn" data-view="progress">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">进度</span>
+      </button>
+    </div>
+  </nav>
 
 </div>
 
@@ -5220,11 +5567,14 @@ function resetWeek3State() {
 const container = document.getElementById('viewContainer');
 
 function render() {
-  const view = document.querySelector('.nav-btn.active');
+  const view = document.querySelector('.bottom-nav-btn.active');
   const viewName = view ? view.dataset.view : 'dashboard';
   if (viewName === 'dashboard') renderDashboard();
   else if (viewName === 'progress') renderProgress();
   else if (viewName === 'wordbank') renderWordBank();
+  else if (viewName === 'mentors') renderMentorSelector();
+  else if (viewName === 'grammarlib') renderGrammarLibrary();
+  else if (viewName === 'achievements') renderAchievements();
   else renderDashboard();
 }
 
@@ -5239,170 +5589,487 @@ function renderDashboard() {
     container.innerHTML = '<div class="fade-in" style="text-align:center;padding:60px 20px;"><h2>🎉 全部课程已完成！</h2><p style="margin-top:12px;color:var(--muted);">更多内容即将上线。</p></div>';
     return;
   }
+  
   const overallMastery = getOverallMastery();
   const totalDays = week.days.length;
   const completedDays = week.days.filter((_, i) => isDayComplete(state.currentWeek, i + 1)).length;
-  const unlockedDays = week.days.filter((_, i) => isDayUnlocked(state.currentWeek, i + 1)).length;
   const isWeekComplete = completedDays >= totalDays;
 
-  // Check if this week's data is auto-generated (placeholder)
-  var isAutoGenerated = false;
-  if (week.days && week.days.length > 0 && week.days[0].exercises && week.days[0].exercises.length > 0) {
-    isAutoGenerated = week.days[0].exercises[0].id && week.days[0].exercises[0].id.indexOf('gen-') === 0;
-  }
-
-  // Week navigation bar
-  let weekNav = '<div class="week-nav-bar">';
-  CURRICULUM.forEach(c => {
-    const isCurrent = c.week === state.currentWeek;
-    const isCompleted = state.completedWeeks.includes(c.week);
-    const isLocked = c.week > state.currentWeek + 1 || (c.week > state.currentWeek && !isWeekComplete);
-    let cls = 'week-nav-btn';
-    if (isCurrent) cls += ' active';
-    if (isCompleted) cls += ' completed';
-    if (isLocked) cls += ' locked';
-    weekNav += `<button class="${cls}" data-week="${c.week}" ${isLocked ? 'disabled' : ''}>
-      <span class="wnb-num">${c.week === 1 ? '1' : c.week === 2 ? '2' : c.week === 3 ? '3' : c.week === 4 ? '4' : c.week === 5 ? '5' : c.week === 6 ? '6' : c.week === 7 ? '7' : '8'}</span>
-      <span class="wnb-label">${c.week === 1 ? '授受' : c.week === 2 ? '条件' : c.week === 3 ? '可能' : c.week === 4 ? '受身' : c.week === 5 ? '敬語' : c.week === 6 ? '助詞' : c.week === 7 ? '接続' : '復習'}</span>
-      ${isCompleted ? '<span class="wnb-check">✓</span>' : ''}
-    </button>`;
-  });
-  weekNav += '</div>';
-
-  // 显示所有语法点（包括历史复习的），用三色状态
-  let grammarChips = '';
-  const allGps = state.allGrammarPoints.length > 0 ? state.allGrammarPoints : week.grammarPoints;
-  allGps.forEach(g => {
-    const mastery = getGrammarMastery(g);
-    const status = getStatusLabel(g);
-    let cls = '';
-    if (status.cls === 'badge-green') cls = 'mastered';
-    else if (status.cls === 'badge-yellow') cls = 'in-progress';
-    else if (status.cls === 'badge-red') cls = '';
-    const dotColor = status.color;
-    grammarChips += `<span class="grammar-chip ${cls}" style="display:inline-flex;align-items:center;gap:4px;">
-      <span style="width:8px;height:8px;border-radius:50%;background:${dotColor};display:inline-block;"></span>
-      ${g}
-    </span>`;
-  });
-
-  let dayBtns = '';
-  week.days.forEach((day, i) => {
+  // 确定今日任务：找到第一个未完成且已解锁的天
+  let todayTask = null;
+  let todayDayNum = 1;
+  for (let i = 0; i < week.days.length; i++) {
     const dayNum = i + 1;
-    const unlocked = isDayUnlocked(state.currentWeek, dayNum);
-    const complete = isDayComplete(state.currentWeek, dayNum);
-    let cls = 'day-btn';
-    if (!unlocked) cls += ' locked';
-    else if (complete) cls += ' completed';
-    else if (dayNum === state.currentDay) cls += ' current';
-    const status = complete ? '✅' : (unlocked ? '○' : '🔒');
-    dayBtns += `<button class="${cls}" data-day="${dayNum}" ${unlocked ? '' : 'disabled'}>
-      <div class="day-num">Day ${dayNum}</div>
-      <div class="day-label">${day.type}</div>
-      <div class="day-status">${status}</div>
-    </button>`;
-  });
-
-  // Next week button
-  let nextWeekBtn = '';
-  const hasNextWeek = CURRICULUM.some(c => c.week === state.currentWeek + 1);
-  if (isWeekComplete && hasNextWeek) {
-    const nextExists = !!WEEK_DATA[state.currentWeek + 1];
-    nextWeekBtn = `<div style="text-align:center;margin-top:16px;">
-      <button class="next-week-btn" onclick="goToNextWeek()">
-        ${nextExists ? '▶ 进入第' + (state.currentWeek + 1) + '周' : '📋 查看课程计划'}
-      </button>
-    </div>`;
-  } else if (isWeekComplete && !hasNextWeek) {
-    nextWeekBtn = `<div style="text-align:center;margin-top:16px;padding:16px;background:var(--accent2-glow);border-radius:var(--radius);">
-      <strong>🎉 恭喜完成全部课程！</strong>
-      <p style="font-size:13px;color:var(--muted);margin-top:4px;">继续复习红色语法点，巩固所学内容。</p>
-    </div>`;
+    if (isDayUnlocked(state.currentWeek, dayNum) && !isDayComplete(state.currentWeek, dayNum)) {
+      todayTask = week.days[i];
+      todayDayNum = dayNum;
+      break;
+    }
   }
+  
+  // 如果本周全部完成，检查是否需要进入下一周
+  if (!todayTask && isWeekComplete) {
+    const hasNextWeek = CURRICULUM.some(c => c.week === state.currentWeek + 1);
+    if (hasNextWeek) {
+      todayTask = { title: '进入下一周', type: 'transition' };
+    } else {
+      todayTask = { title: '复习巩固', type: 'review' };
+    }
+  }
+
+  // 获取当前导师
+  const currentMentor = MENTORS[state.selectedMentor || 'tanaka'];
+  const mentorId = state.selectedMentor || 'tanaka';
+  
+  // 获取今日语法点及健康度
+  const todayGrammar = getGrammarForDay(todayDayNum);
+  const grammarStatus = todayGrammar ? getStatusLabel(todayGrammar) : null;
+  const grammarMastery = todayGrammar ? getGrammarMastery(todayGrammar) : null;
+  
+  // 计算连续学习天数
+  let streakDays = 0;
+  for (let w = state.currentWeek; w >= 1; w--) {
+    const wData = WEEK_DATA[w];
+    if (!wData) break;
+    let foundBreak = false;
+    for (let d = wData.days.length; d >= 1; d--) {
+      if (isDayComplete(w, d)) {
+        streakDays++;
+      } else if (w === state.currentWeek) {
+        // 当前周的未完成天不算中断
+      } else {
+        foundBreak = true;
+        break;
+      }
+    }
+    if (foundBreak) break;
+  }
+
+  // 周进度点
+  let progressDots = '';
+  for (let i = 1; i <= totalDays; i++) {
+    const done = isDayComplete(state.currentWeek, i);
+    const current = (i === todayDayNum && !done);
+    let cls = 'progress-dot';
+    if (done) cls += ' done';
+    else if (current) cls += ' current';
+    progressDots += `<span class="${cls}"></span>`;
+  }
+
+  // 健康度建议
+  function getHealthAdvice(status) {
+    if (!status) return '开始学习，建立基础！';
+    if (status.cls === 'badge-green') return '继续保持，这周稳了！';
+    if (status.cls === 'badge-yellow') return '今天多练，本周就能变绿！';
+    if (status.cls === 'badge-red') return '重点复习，这里有提升空间！';
+    return '开始学习吧！';
+  }
+
+  // 估算学习时间
+  function estimateTime(day) {
+    if (!day || !day.exercises) return '5-8分钟';
+    const exCount = day.exercises.length;
+    if (exCount <= 3) return '约5分钟';
+    if (exCount <= 6) return '约8分钟';
+    return '约10-12分钟';
+  }
+
+  // 导师头像颜色
+  const mentorColors = {
+    tanaka: 'background: linear-gradient(135deg, #C0392B, #E74C3C);',
+    sato: 'background: linear-gradient(135deg, #2C5F2D, #4CAF50);',
+    hayashi: 'background: linear-gradient(135deg, #1565C0, #42A5F5);'
+  };
 
   container.innerHTML = `
     <div class="fade-in">
+      <!-- 欢迎语 -->
       <div class="dashboard-hero">
         <h1>🌲 おかえりなさい</h1>
-        <p style="font-size:14px;color:var(--ink-soft);">${week.title}：${week.subtitle}</p>
       </div>
 
-      ${weekNav}
+      <!-- 今日任务卡片 -->
+      <div class="today-task-card">
+        <div class="today-task-header">
+          <span>📋 今日任务</span>
+        </div>
+        <div class="today-task-mentor">
+          <div class="mentor-mini-avatar" style="${mentorColors[mentorId]}">${mentorId === 'tanaka' ? '田' : mentorId === 'sato' ? '佐' : '林'}</div>
+          <div class="mentor-waiting">
+            <strong>${currentMentor.name}</strong>在等你
+          </div>
+        </div>
+        <div class="today-task-topic">${todayTask ? applyFurigana(todayTask.title) : '本周任务已完成'}</div>
+        <div class="today-task-estimate">⏱️ 估计用时: ${todayTask ? estimateTime(todayTask) : '-'}</div>
+        <button class="today-task-btn" onclick="startTodayTask()">
+          ${isWeekComplete ? '📋 查看进度' : '🎯 开始学习'}
+        </button>
+      </div>
 
-      ${isAutoGenerated ? `<div style="text-align:center;margin-bottom:8px;padding:8px 16px;background:var(--gold-glow);border-radius:var(--radius);font-size:12px;color:var(--gold);">
-        📝 本周内容为自动生成。如需完整学习体验，建议手动创建课程数据。
-      </div>` : ''}
+      <!-- 健康度卡片 -->
+      ${grammarStatus ? `
+      <div class="health-card">
+        <span class="health-icon">${grammarStatus.cls === 'badge-green' ? '🟢' : grammarStatus.cls === 'badge-yellow' ? '🟡' : '🔴'}</span>
+        <div class="health-text">
+          <div class="health-label">📊 ${todayGrammar} 健康度</div>
+          <div class="health-status ${grammarStatus.cls === 'badge-green' ? 'green' : grammarStatus.cls === 'badge-yellow' ? 'yellow' : 'red'}">${grammarStatus.label}</div>
+          <div class="health-advice">💡 ${getHealthAdvice(grammarStatus)}</div>
+        </div>
+      </div>
+      ` : ''}
 
+      <!-- 每日一句话 + 联想记忆 -->
+      ${getMemorySentenceForDay(state.currentWeek, todayDayNum) ? (() => {
+        const mem = getMemorySentenceForDay(state.currentWeek, todayDayNum);
+        return `<div class="memory-card">
+          <div class="memory-label">📖 今日の一言</div>
+          <div class="memory-jp">${applyFurigana(mem.jp)}</div>
+          <div class="memory-hint" onclick="this.nextElementSibling.classList.toggle('show');">👆 点击查看翻译</div>
+          <div class="memory-trans">${mem.cn}</div>
+          <div class="memory-mnemonic" id="mnemonic-dashboard">
+            <strong>💡 联想记忆法</strong><br>
+            ${mem.mnemonic}
+          </div>
+          <button class="memory-mnemonic-toggle" onclick="document.getElementById('mnemonic-dashboard').classList.toggle('show');this.textContent=this.textContent.includes('显示')?'🎭 隐藏记忆窍门':'🎭 显示记忆窍门';" style="width:100%;margin-top:12px;padding:10px;background:linear-gradient(135deg, #FAF0E6, #FFF8F0);border:1px solid var(--gold);border-radius:var(--radius-sm);font-size:14px;color:var(--gold);cursor:pointer;transition:var(--transition);">🎭 显示记忆窍门</button>
+        </div>`;
+      })() : ''}
+
+      <!-- 周进度 -->
+      <div class="week-progress-mini">
+        <span class="progress-label">📅 本周进度: Day ${completedDays}/${totalDays}</span>
+        <div class="progress-dots">${progressDots}</div>
+      </div>
+
+      <!-- 连续学习 -->
+      <div style="text-align:center;margin-bottom:20px;">
+        <span class="streak-badge">🔥 连续学习: ${streakDays}天</span>
+      </div>
+
+      <!-- 快速入口 -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
+        <button onclick="switchView('mentors')" style="padding:14px 10px;background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius-sm);font-size:13px;color:var(--ink);cursor:pointer;transition:var(--transition);">
+          👨‍🏫 选择导师
+        </button>
+        <button onclick="switchView('grammarlib')" style="padding:14px 10px;background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius-sm);font-size:13px;color:var(--ink);cursor:pointer;transition:var(--transition);">
+          📚 语法库
+        </button>
+        <button onclick="switchView('achievements')" style="padding:14px 10px;background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius-sm);font-size:13px;color:var(--ink);cursor:pointer;transition:var(--transition);">
+          🏆 我的成就
+        </button>
+      </div>
+
+      <!-- 统计数据（可折叠） -->
+      <details style="margin-bottom:16px;">
+        <summary style="padding:12px 16px;background:var(--surface);border:1px solid var(--rule);border-radius:var(--radius-sm);font-size:14px;font-weight:600;color:var(--ink-soft);cursor:pointer;">📊 查看详细统计</summary>
+        <div class="stats-bar" style="margin-top:12px;">
+          <div class="stat-card">
+            <div class="stat-num">${completedDays}/${totalDays}</div>
+            <div class="stat-label">本周完成</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">${overallMastery}%</div>
+            <div class="stat-label">整体掌握度</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">${state.totalExercises}</div>
+            <div class="stat-label">练习总数</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- 周导航（简化版） -->
+      <div style="display:flex;justify-content:center;gap:8px;margin-bottom:20px;">
+        ${CURRICULUM.map(c => {
+          const isCurrent = c.week === state.currentWeek;
+          const isCompleted = state.completedWeeks.includes(c.week);
+          const isLocked = c.week > state.currentWeek + 1 || (c.week > state.currentWeek && !isWeekComplete);
+          let bg = isCurrent ? 'var(--accent)' : isCompleted ? 'var(--accent2)' : isLocked ? 'var(--rule)' : 'var(--surface)';
+          let color = (isCurrent || isCompleted) ? 'white' : isLocked ? 'var(--muted)' : 'var(--ink)';
+          return `<button onclick="goToWeek(${c.week})" style="width:36px;height:36px;border-radius:50%;border:2px solid ${isLocked ? 'var(--rule)' : (isCurrent ? 'var(--accent)' : isCompleted ? 'var(--accent2)' : 'var(--rule)')};background:${bg};color:${color};font-size:14px;font-weight:700;cursor:${isLocked ? 'not-allowed' : 'pointer'};opacity:${isLocked ? '0.5' : '1'};" ${isLocked ? 'disabled' : ''}>${c.week}</button>`;
+        }).join('')}
+      </div>
+
+      <!-- 调试按钮 -->
       <div style="text-align:center;margin-bottom:12px;">
         <button onclick="resetWeek3State()" style="font-size:11px;padding:4px 10px;border:1px solid var(--rule);border-radius:6px;background:var(--surface);color:var(--muted);cursor:pointer;">🔄 修复第三周</button>
       </div>
+    </div>
+  `;
+}
 
-      <div class="stats-bar">
-        <div class="stat-card">
-          <div class="stat-num">${completedDays}/${totalDays}</div>
-          <div class="stat-label">本周完成</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num">${overallMastery}%</div>
-          <div class="stat-label">整体掌握度</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-num">${state.totalExercises}</div>
-          <div class="stat-label">练习总数</div>
-        </div>
-      </div>
+// 切换视图
+function switchView(viewName) {
+  document.querySelectorAll('.bottom-nav-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector(`.bottom-nav-btn[data-view="${viewName}"]`);
+  if (btn) btn.classList.add('active');
+  render();
+}
 
-      <div class="week-card">
-        <div class="week-header">
-          <div>
-            <div class="week-title">第${state.currentWeek}周：${week.subtitle}</div>
-            <div class="week-subtitle">${isWeekComplete ? '🎉 本周已完成！' : '完成每日任务，解锁下一天'}</div>
+// 开始今日任务
+function startTodayTask() {
+  const week = WEEK_DATA[state.currentWeek];
+  if (!week) return;
+  
+  // 找到第一个未完成的天
+  for (let i = 0; i < week.days.length; i++) {
+    const dayNum = i + 1;
+    if (isDayUnlocked(state.currentWeek, dayNum) && !isDayComplete(state.currentWeek, dayNum)) {
+      state.currentDay = dayNum;
+      saveState();
+      renderDay(state.currentWeek, dayNum);
+      return;
+    }
+  }
+  
+  // 如果本周完成，显示进度页
+  switchView('progress');
+}
+
+// ============================================================
+// MENTOR SELECTOR PAGE
+// ============================================================
+function renderMentorSelector() {
+  const currentMentorId = state.selectedMentor || 'tanaka';
+  
+  // 导师头像颜色
+  const mentorColors = {
+    tanaka: 'background: linear-gradient(135deg, #C0392B, #E74C3C);',
+    sato: 'background: linear-gradient(135deg, #2C5F2D, #4CAF50);',
+    hayashi: 'background: linear-gradient(135deg, #1565C0, #42A5F5);'
+  };
+  
+  // 导师特点描述
+  const mentorDescriptions = {
+    tanaka: {
+      desc: '严谨的语法专家，注重每一个助词和时态的正确性。',
+      suit: '需要严格纠错、想快速提升准确率的你'
+    },
+    sato: {
+      desc: '像日本朋友一样，用自然的口语陪你练习。',
+      suit: '想练习日常对话、需要鼓励式学习的你'
+    },
+    hayashi: {
+      desc: '苏格拉底式提问，引导你自己发现答案。',
+      suit: '想深入理解语法、喜欢思考式学习的你'
+    }
+  };
+  
+  container.innerHTML = `
+    <div class="fade-in mentor-select-page">
+      <div class="mentor-select-title">👨‍🏫 选择今天的导师</div>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:24px;">每位导师有不同的教学风格，选择适合你今天状态的那一位</p>
+      
+      ${Object.values(MENTORS).map(m => `
+        <div class="mentor-select-card ${m.id === currentMentorId ? 'selected' : ''}" onclick="selectMentor('${m.id}')">
+          <div class="mentor-select-header">
+            <div class="mentor-select-avatar" style="${mentorColors[m.id]}">${m.id === 'tanaka' ? '田' : m.id === 'sato' ? '佐' : '林'}</div>
+            <div>
+              <div class="mentor-select-name">${m.name}</div>
+              <div class="mentor-select-style">${m.title}</div>
+            </div>
           </div>
-          <span class="week-badge">${isWeekComplete ? '✅ 已完成' : '进行中'}</span>
+          <div class="mentor-select-desc">${mentorDescriptions[m.id].desc}</div>
+          <div class="mentor-select-suit">✨ 适合: ${mentorDescriptions[m.id].suit}</div>
+          <button class="mentor-select-btn">${m.id === currentMentorId ? '✓ 当前选择' : '选择此导师'}</button>
         </div>
-        <div class="week-grammars">${grammarChips}</div>
-        <div class="day-grid">${dayBtns}</div>
-        ${nextWeekBtn}
-      </div>
-
-      <div class="mastery-section">
-        <h2>📊 语法掌握度 ${getRedGrammarPoints().length > 0 ? `<span style="font-size:13px;font-weight:400;color:var(--accent);">🔴 ${getRedGrammarPoints().length} 个需重学</span>` : ''}</h2>
-        <div class="mastery-grid">
-          ${allGps.map(g => {
-            const m = getGrammarMastery(g);
-            const st = getStatusLabel(g);
-            return `<div class="mastery-item">
-              <div class="mastery-name" style="display:flex;align-items:center;gap:6px;">
-                <span style="width:10px;height:10px;border-radius:50%;background:${st.color};display:inline-block;"></span>
-                ${g}
-                <span style="font-size:11px;font-weight:400;color:${st.color};">${st.label}</span>
-              </div>
-              <div class="mastery-bar-wrap">
-                <div class="mastery-bar-fill" style="width:${m.score}%"></div>
-              </div>
-              <div class="mastery-pct">${m.score}% (${m.correct}/${m.attempts})</div>
-            </div>`;
-          }).join('')}
-        </div>
+      `).join('')}
+      
+      <div style="text-align:center;margin-top:20px;">
+        <button onclick="switchView('dashboard')" style="padding:12px 24px;background:var(--accent);color:white;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;">返回首页</button>
       </div>
     </div>
   `;
+}
 
-  // Bind day buttons
-  container.querySelectorAll('.day-btn:not(.locked)').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.currentDay = parseInt(btn.dataset.day);
-      saveState();
-      renderDay(state.currentWeek, state.currentDay);
-    });
+function selectMentor(mentorId) {
+  state.selectedMentor = mentorId;
+  saveState();
+  // 更新UI显示
+  document.querySelectorAll('.mentor-select-card').forEach(card => {
+    card.classList.remove('selected');
   });
+  const selectedCard = document.querySelector(`.mentor-select-card[onclick="selectMentor('${mentorId}')"]`);
+  if (selectedCard) selectedCard.classList.add('selected');
+  // 重新渲染以更新按钮文字
+  renderMentorSelector();
+}
 
-  // Bind week nav buttons
-  container.querySelectorAll('.week-nav-btn:not(.locked)').forEach(btn => {
-    btn.addEventListener('click', () => {
-      goToWeek(parseInt(btn.dataset.week));
-    });
+// ============================================================
+// GRAMMAR LIBRARY PAGE
+// ============================================================
+function renderGrammarLibrary() {
+  if (!WEEK_DATA[state.currentWeek]) {
+    var gen = generateDefaultWeekData(state.currentWeek);
+    if (gen) WEEK_DATA[state.currentWeek] = gen;
+  }
+  const week = WEEK_DATA[state.currentWeek];
+  
+  // 获取所有语法点（包括历史）
+  const allGps = state.allGrammarPoints.length > 0 ? state.allGrammarPoints : (week ? week.grammarPoints : []);
+  
+  // 按健康度排序：红色 > 黄色 > 绿色 > 新学
+  const sortedGps = [...allGps].sort((a, b) => {
+    const statusA = getStatusLabel(a);
+    const statusB = getStatusLabel(b);
+    const order = { 'badge-red': 0, 'badge-yellow': 1, 'badge-green': 2, 'badge-new': 3 };
+    return (order[statusA.cls] || 3) - (order[statusB.cls] || 3);
   });
+  
+  container.innerHTML = `
+    <div class="fade-in">
+      <h2 style="font-size:20px;font-weight:700;margin-bottom:8px;">📚 ${week ? week.subtitle : ''}语法库</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">点击语法点开始专项练习</p>
+      
+      <!-- 红色提示 -->
+      ${getRedGrammarPoints().length > 0 ? `
+      <div style="padding:12px 16px;background:#FFEBEE;border:1px solid #EF9A9A;border-radius:var(--radius-sm);margin-bottom:16px;font-size:14px;">
+        <strong style="color:var(--accent);">🔴 需要优先复习：</strong>
+        <span style="color:var(--ink-soft);">${getRedGrammarPoints().join('、')}</span>
+      </div>
+      ` : ''}
+      
+      <!-- 语法列表 -->
+      ${sortedGps.map(g => {
+        const m = getGrammarMastery(g);
+        const st = getStatusLabel(g);
+        const statusIcon = st.cls === 'badge-green' ? '🟢' : st.cls === 'badge-yellow' ? '🟡' : st.cls === 'badge-red' ? '🔴' : '⚪';
+        const lastPracticed = m.attempts > 0 ? `${m.correct}/${m.attempts}题正确` : '尚未练习';
+        
+        // 找到该语法点对应的天数
+        let relatedDay = null;
+        if (week && week.days) {
+          for (let i = 0; i < week.days.length; i++) {
+            const day = week.days[i];
+            if (day.content && day.content.some(c => c.title && c.title.includes(g))) {
+              relatedDay = i + 1;
+              break;
+            }
+          }
+        }
+        
+        return `<div class="grammar-lib-item" onclick="${relatedDay ? `startPracticeOfDay(${relatedDay})` : `switchView('dashboard')`}">
+          <div class="grammar-lib-header">
+            <div class="grammar-lib-name">
+              <span style="width:10px;height:10px;border-radius:50%;background:${st.color};display:inline-block;"></span>
+              ${g}
+            </div>
+            <div class="grammar-lib-status" style="color:${st.color};">
+              ${statusIcon} ${st.label}
+            </div>
+          </div>
+          <div class="grammar-lib-meta">
+            上次练习: ${lastPracticed} | 正确率: ${m.score}%
+          </div>
+          ${st.cls !== 'badge-green' ? `<button class="grammar-lib-action">${st.cls === 'badge-red' ? '立即复习' : '开始练习'}</button>` : ''}
+        </div>`;
+      }).join('')}
+      
+      <div style="text-align:center;margin-top:20px;">
+        <button onclick="switchView('dashboard')" style="padding:12px 24px;background:var(--accent);color:white;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;">返回首页</button>
+      </div>
+    </div>
+  `;
+}
+
+function startPracticeOfDay(dayNum) {
+  state.currentDay = dayNum;
+  saveState();
+  renderDay(state.currentWeek, dayNum);
+}
+
+// ============================================================
+// ACHIEVEMENTS PAGE
+// ============================================================
+function renderAchievements() {
+  // 计算成就
+  const totalExercises = state.totalExercises || 0;
+  const totalCorrect = state.totalCorrect || 0;
+  const accuracy = totalExercises > 0 ? Math.round((totalCorrect / totalExercises) * 100) : 0;
+  const completedWeeks = state.completedWeeks ? state.completedWeeks.length : 0;
+  
+  // 计算连续学习天数
+  let streakDays = 0;
+  for (let w = state.currentWeek; w >= 1; w--) {
+    const wData = WEEK_DATA[w];
+    if (!wData) break;
+    let foundBreak = false;
+    for (let d = wData.days.length; d >= 1; d--) {
+      if (isDayComplete(w, d)) {
+        streakDays++;
+      } else if (w === state.currentWeek) {
+        // 当前周的未完成天不算中断
+      } else {
+        foundBreak = true;
+        break;
+      }
+    }
+    if (foundBreak) break;
+  }
+  
+  // 获取已掌握语法点数量
+  const masteredCount = Object.values(state.grammarMastery || {}).filter(g => g.status === 'green').length;
+  const totalGrammar = state.allGrammarPoints ? state.allGrammarPoints.length : 0;
+  
+  // 成就列表
+  const achievements = [
+    { id: 'first_day', name: '初入森林', desc: '完成第一天学习', icon: '🌱', unlocked: totalExercises > 0 },
+    { id: 'streak_3', name: '三日坚持', desc: '连续学习3天', icon: '🔥', unlocked: streakDays >= 3 },
+    { id: 'streak_7', name: '一周达人', desc: '连续学习7天', icon: '💪', unlocked: streakDays >= 7 },
+    { id: 'week_complete', name: '周冠军', desc: '完成一周课程', icon: '🏆', unlocked: completedWeeks >= 1 },
+    { id: 'accuracy_80', name: '精准射手', desc: '正确率达到80%', icon: '🎯', unlocked: accuracy >= 80 },
+    { id: 'exercises_50', name: '练习达人', desc: '完成50道练习题', icon: '📝', unlocked: totalExercises >= 50 },
+    { id: 'exercises_100', name: '题海战士', desc: '完成100道练习题', icon: '📚', unlocked: totalExercises >= 100 },
+    { id: 'mastered_3', name: '语法新星', desc: '掌握3个语法点', icon: '⭐', unlocked: masteredCount >= 3 },
+    { id: 'mastered_all', name: '语法大师', desc: '掌握所有语法点', icon: '👑', unlocked: masteredCount >= totalGrammar && totalGrammar > 0 },
+  ];
+  
+  const unlockedCount = achievements.filter(a => a.unlocked).length;
+  
+  container.innerHTML = `
+    <div class="fade-in">
+      <h2 style="font-size:20px;font-weight:700;margin-bottom:8px;">🏆 我的成就</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">已解锁 ${unlockedCount}/${achievements.length} 个成就</p>
+      
+      <!-- 成就统计卡片 -->
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;">
+        <div style="background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius);padding:16px;text-align:center;">
+          <div style="font-size:28px;font-weight:700;color:var(--accent);">${totalExercises}</div>
+          <div style="font-size:12px;color:var(--muted);">总练习数</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius);padding:16px;text-align:center;">
+          <div style="font-size:28px;font-weight:700;color:var(--accent2);">${accuracy}%</div>
+          <div style="font-size:12px;color:var(--muted);">正确率</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius);padding:16px;text-align:center;">
+          <div style="font-size:28px;font-weight:700;color:var(--gold);">${streakDays}</div>
+          <div style="font-size:12px;color:var(--muted);">连续学习天数</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius);padding:16px;text-align:center;">
+          <div style="font-size:28px;font-weight:700;color:var(--accent);">${masteredCount}/${totalGrammar}</div>
+          <div style="font-size:12px;color:var(--muted);">已掌握语法</div>
+        </div>
+      </div>
+      
+      <!-- 成就列表 -->
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:12px;">🎖️ 成就墙</h3>
+      <div style="display:grid;gap:12px;">
+        ${achievements.map(a => `
+          <div style="display:flex;align-items:center;gap:14px;padding:16px;background:${a.unlocked ? 'var(--gold-glow)' : 'var(--surface)'};border:1px solid ${a.unlocked ? 'var(--gold)' : 'var(--rule)'};border-radius:var(--radius-sm);opacity:${a.unlocked ? '1' : '0.6'};">
+            <div style="font-size:32px;filter:${a.unlocked ? 'none' : 'grayscale(100%)'};">${a.icon}</div>
+            <div style="flex:1;">
+              <div style="font-size:15px;font-weight:600;color:${a.unlocked ? '#6D4C00' : 'var(--muted)'};">${a.name}</div>
+              <div style="font-size:12px;color:var(--muted);">${a.desc}</div>
+            </div>
+            ${a.unlocked ? '<span style="color:var(--accent2);font-size:18px;">✓</span>' : '<span style="color:var(--muted);font-size:12px;">🔒</span>'}
+          </div>
+        `).join('')}
+      </div>
+      
+      <div style="text-align:center;margin-top:24px;">
+        <button onclick="switchView('dashboard')" style="padding:12px 24px;background:var(--accent);color:white;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;">返回首页</button>
+      </div>
+    </div>
+  `;
 }
 
 function renderDay(weekNum, dayNum) {
@@ -6183,58 +6850,68 @@ function renderProgress() {
   const completedDays = week.days.filter((_, i) => isDayComplete(state.currentWeek, i + 1)).length;
   const isWeekComplete = completedDays >= totalDays;
 
-  // Week navigation bar
-  let weekNav = '<div class="week-nav-bar">';
-  CURRICULUM.forEach(c => {
-    const isCurrent = c.week === state.currentWeek;
-    const isCompleted = state.completedWeeks.includes(c.week);
-    const isLocked = c.week > state.currentWeek + 1 || (c.week > state.currentWeek && !isWeekComplete);
-    let cls = 'week-nav-btn';
-    if (isCurrent) cls += ' active';
-    if (isCompleted) cls += ' completed';
-    if (isLocked) cls += ' locked';
-    weekNav += `<button class="${cls}" data-week="${c.week}" ${isLocked ? 'disabled' : ''}>
-      <span class="wnb-num">${c.week}</span>
-      <span class="wnb-label">${c.week === 1 ? '授受' : c.week === 2 ? '条件' : c.week === 3 ? '可能' : c.week === 4 ? '受身' : c.week === 5 ? '敬語' : c.week === 6 ? '助詞' : c.week === 7 ? '接続' : '復習'}</span>
-      ${isCompleted ? '<span class="wnb-check">✓</span>' : ''}
-    </button>`;
+  // 获取所有语法点并按健康度排序
+  const allGps = state.allGrammarPoints.length > 0 ? state.allGrammarPoints : (week ? week.grammarPoints : []);
+  const sortedGps = [...allGps].sort((a, b) => {
+    const statusA = getStatusLabel(a);
+    const statusB = getStatusLabel(b);
+    const order = { 'badge-red': 0, 'badge-yellow': 1, 'badge-green': 2, 'badge-new': 3 };
+    return (order[statusA.cls] || 3) - (order[statusB.cls] || 3);
   });
-  weekNav += '</div>';
 
   let dayHistory = '';
   week.days.forEach((day, i) => {
     const d = i + 1;
     const complete = isDayComplete(state.currentWeek, d);
     const score = getDayScore(state.currentWeek, d);
-    dayHistory += `<div class="content-card" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;margin-bottom:8px;">
+    dayHistory += `<div class="content-card" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;margin-bottom:8px;cursor:pointer;" onclick="startPracticeOfDay(${d})">
       <div>
         <div style="font-weight:600;font-size:14px;">Day ${d}：${day.title}</div>
         <div style="font-size:12px;color:var(--muted);">${day.type}</div>
       </div>
       <div style="text-align:right;">
-        ${complete ? `<span style="color:var(--accent2);font-weight:600;">✅ ${score ? score.correct + '/' + score.total : '完成'}</span>` : `<span style="color:var(--muted);">未完成</span>`}
+        ${complete ? `<span style="color:var(--accent2);font-weight:600;">✅ ${score ? score.correct + '/' + score.total : '完成'}</span>` : `<span style="color:var(--accent);font-weight:600;">○ 开始</span>`}
       </div>
     </div>`;
   });
 
-  let masteryHtml = '';
-  const allGps = state.allGrammarPoints.length > 0 ? state.allGrammarPoints : (week ? week.grammarPoints : []);
-  allGps.forEach(g => {
+  // 语法点健康度卡片
+  let grammarHealthHtml = '';
+  sortedGps.forEach(g => {
     const m = getGrammarMastery(g);
     const st = getStatusLabel(g);
     const barColor = st.cls === 'badge-green' ? 'var(--accent2)' : st.cls === 'badge-yellow' ? 'var(--gold)' : st.cls === 'badge-red' ? 'var(--accent)' : 'var(--muted)';
-    masteryHtml += `<div class="content-card" style="padding:16px 20px;margin-bottom:8px;">
-      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-        <span style="font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:${st.color};display:inline-block;"></span>
+    const statusIcon = st.cls === 'badge-green' ? '🟢' : st.cls === 'badge-yellow' ? '🟡' : st.cls === 'badge-red' ? '🔴' : '⚪';
+    
+    // 找到该语法点对应的天数
+    let relatedDay = null;
+    if (week && week.days) {
+      for (let i = 0; i < week.days.length; i++) {
+        const day = week.days[i];
+        if (day.content && day.content.some(c => c.title && c.title.includes(g))) {
+          relatedDay = i + 1;
+          break;
+        }
+      }
+    }
+    
+    grammarHealthHtml += `<div class="grammar-lib-item" onclick="${relatedDay ? `startPracticeOfDay(${relatedDay})` : `switchView('grammarlib')`}">
+      <div class="grammar-lib-header">
+        <div class="grammar-lib-name">
+          <span style="width:10px;height:10px;border-radius:50%;background:${st.color};display:inline-block;"></span>
           ${g}
-          <span style="font-size:11px;font-weight:400;color:${st.color};">${st.label}</span>
-        </span>
-        <span style="font-size:13px;color:var(--muted);">${m.score}% (${m.correct}/${m.attempts})</span>
+        </div>
+        <div class="grammar-lib-status" style="color:${st.color};">
+          ${statusIcon} ${st.label}
+        </div>
       </div>
-      <div class="mastery-bar-wrap">
-        <div class="mastery-bar-fill" style="width:${m.score}%;background:${barColor};"></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:8px;">
+        <div class="mastery-bar-wrap" style="flex:1;height:8px;">
+          <div class="mastery-bar-fill" style="width:${m.score}%;background:${barColor};"></div>
+        </div>
+        <span style="font-size:12px;color:var(--muted);min-width:60px;">${m.score}% (${m.correct}/${m.attempts})</span>
       </div>
+      ${st.cls !== 'badge-green' ? `<button class="grammar-lib-action" style="margin-top:8px;">${st.cls === 'badge-red' ? '🔴 立即复习' : '🟡 开始练习'}</button>` : ''}
     </div>`;
   });
   
@@ -6242,29 +6919,47 @@ function renderProgress() {
   let redAlert = '';
   const redPoints = getRedGrammarPoints();
   if (redPoints.length > 0) {
-    redAlert = `<div style="padding:12px 16px;background:#FFEBEE;border:1px solid #EF9A9A;border-radius:8px;margin-bottom:16px;font-size:14px;">
+    redAlert = `<div style="padding:12px 16px;background:#FFEBEE;border:1px solid #EF9A9A;border-radius:var(--radius);margin-bottom:16px;font-size:14px;">
       <strong style="color:var(--accent);">🔴 需要优先复习：</strong>
       <span style="color:var(--ink-soft);">${redPoints.join('、')}</span>
-      <span style="display:block;font-size:12px;color:var(--muted);margin-top:4px;">这些语法点下周会自动加入复习日</span>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;">这些语法点需要加强练习，点击可快速开始</div>
     </div>`;
   }
 
+  // 统计概览
+  const overallMastery = getOverallMastery();
+  
   container.innerHTML = `
     <div class="fade-in">
       <div style="margin-bottom:24px;">
         <h2 style="font-size:20px;font-weight:700;">📈 学习进度</h2>
-        <p style="font-size:13px;color:var(--muted);">第${state.currentWeek}周 · ${completedDays}/${totalDays} 天完成 · 共 ${state.totalExercises} 道练习 · ${state.totalCorrect} 道正确</p>
+        <p style="font-size:13px;color:var(--muted);">第${state.currentWeek}周 · ${completedDays}/${totalDays} 天完成</p>
       </div>
 
-      ${weekNav}
+      <!-- 统计卡片 -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+        <div style="background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius);padding:14px;text-align:center;">
+          <div style="font-size:24px;font-weight:700;color:var(--accent);">${state.totalExercises}</div>
+          <div style="font-size:11px;color:var(--muted);">总练习数</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius);padding:14px;text-align:center;">
+          <div style="font-size:24px;font-weight:700;color:var(--accent2);">${overallMastery}%</div>
+          <div style="font-size:11px;color:var(--muted);">正确率</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--rule);border-radius:var(--radius);padding:14px;text-align:center;">
+          <div style="font-size:24px;font-weight:700;color:var(--gold);">${completedWeeks.length}</div>
+          <div style="font-size:11px;color:var(--muted);">完成周数</div>
+        </div>
+      </div>
 
       ${redAlert}
 
       <h3 style="font-size:15px;font-weight:600;margin-bottom:12px;color:var(--accent2);">📅 每日完成情况</h3>
       ${dayHistory}
 
-      <h3 style="font-size:15px;font-weight:600;margin:20px 0 12px;color:var(--accent2);">🎯 语法掌握度（按需要复习排序）</h3>
-      ${masteryHtml}
+      <h3 style="font-size:15px;font-weight:600;margin:20px 0 12px;color:var(--accent2);">🎯 语法健康度</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">按优先级排序，点击语法点开始专项练习</p>
+      ${grammarHealthHtml}
 
       <div style="text-align:center;margin-top:24px;padding:20px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--rule);">
         <p style="font-size:13px;color:var(--muted);">学习数据保存在浏览器中，清除浏览器数据会丢失进度。</p>
@@ -6272,13 +6967,6 @@ function renderProgress() {
       </div>
     </div>
   `;
-
-  // Bind week nav buttons
-  container.querySelectorAll('.week-nav-btn:not(.locked)').forEach(btn => {
-    btn.addEventListener('click', () => {
-      goToWeek(parseInt(btn.dataset.week));
-    });
-  });
 }
 
 // ============================================================
@@ -6356,9 +7044,9 @@ function renderWordBank() {
 // ============================================================
 // NAVIGATION
 // ============================================================
-document.querySelectorAll('.nav-btn').forEach(btn => {
+document.querySelectorAll('.bottom-nav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.bottom-nav-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     render();
   });
